@@ -5,7 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { createUserSchema, loginSchema } from './dto/zod.dto';
 
-@Controller('users')
+@Controller('auth')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
