@@ -1,9 +1,21 @@
-import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UnauthorizedException,
+  Patch,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { createUserSchema, loginSchema } from './dto/zod.dto';
+import { UpdateUserRoleDto } from './dto/role.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Controller('auth')
 export class UsersController {
@@ -42,5 +54,15 @@ export class UsersController {
       user.role,
     );
     return { access_token: token };
+  }
+
+  @Patch(':id/role')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async updateUserRole(
+    @Param('id') id: string,
+    @Body() role: UpdateUserRoleDto,
+  ) {
+    return this.usersService.updateRole(+id, role);
   }
 }
