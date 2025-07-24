@@ -9,7 +9,14 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [AppointmentModule, VaccineHistoryModule, StockModule, AlertModule, UsersModule, AuthModule],
+  imports: [
+    AppointmentModule,
+    VaccineHistoryModule,
+    StockModule,
+    AlertModule,
+    UsersModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
