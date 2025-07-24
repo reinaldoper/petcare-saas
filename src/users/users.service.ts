@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoginDto } from './dto/login.dto';
 
 const prisma = new PrismaClient();
 
@@ -20,15 +21,16 @@ export class UsersService {
     return await prisma.user.findUnique({ where: { email } });
   }
 
-  async validateUser(userCreate: CreateUserDto): Promise<CreateUserDto | null> {
-    const user = await this.findByEmail(userCreate.email);
-    const passwordUser = userCreate.password;
+  async validateUser(login: LoginDto): Promise<CreateUserDto | null> {
+    const user = await this.findByEmail(login.email);
+    const passwordUser = login.password;
     if (user && (await bcrypt.compare(passwordUser, user.password))) {
       const { ...result } = user;
       return {
         id: result.id,
         email: result.email,
         name: result.name ?? undefined,
+        role: result.role,
       } as CreateUserDto;
     }
     return null;

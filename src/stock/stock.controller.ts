@@ -13,14 +13,17 @@ import { CreateStockDto } from './dto/create-stock.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { createStockSchema } from './dto/zod.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('stock')
 @Controller('stock')
 export class StockController {
   constructor(private readonly service: StockService) {}
 
   @Post()
+  @Roles('ADMIN')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateStockDto) {
     const result = createStockSchema.safeParse(dto);
@@ -31,12 +34,14 @@ export class StockController {
   }
 
   @Get()
+  @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
   async findAll() {
     return await this.service.findAll();
   }
 
   @Get(':id')
+  @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
   async findOne(@Param('id') id: string) {
     return await this.service.findOne(+id);

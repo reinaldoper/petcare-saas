@@ -13,8 +13,10 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { createAppointmentDtoSchema } from './dto/zod.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('appointments')
 @Controller('appointments')
 export class AppointmentController {
@@ -31,12 +33,14 @@ export class AppointmentController {
   }
 
   @Get()
+  @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
   async findAll() {
     return await this.appointmentService.findAll();
   }
 
   @Get(':id')
+  @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
   async findOne(@Param('id') id: string) {
     return await this.appointmentService.findOne(+id);

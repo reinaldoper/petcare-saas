@@ -13,14 +13,17 @@ import { CreateVaccineHistoryDto } from './dto/create-vaccine-history.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { createVaccineSchema } from './dto/zod.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('vaccine-history')
 @Controller('vaccine-history')
 export class VaccineHistoryController {
   constructor(private readonly service: VaccineHistoryService) {}
 
   @Post()
+  @Roles('ADMIN')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateVaccineHistoryDto) {
     const result = createVaccineSchema.safeParse(dto);

@@ -15,15 +15,15 @@ export class AlertService {
       const result = addDays(now, 7);
 
       if (isNaN(result.getTime())) {
-        throw new Error('Failed to calculate date 7 days from now.');
+        throw new Error('Falha ao calcular a data.');
       }
 
       inSevenDays = result;
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error('Error calculating date: ' + error.message);
+        throw new Error('Erro para calcular a data: ' + error.message);
       }
-      throw new Error('Error calculating date: ' + String(error));
+      throw new Error('Erro para calcular a data: ' + String(error));
     }
 
     return await prisma.vaccineHistory.findMany({

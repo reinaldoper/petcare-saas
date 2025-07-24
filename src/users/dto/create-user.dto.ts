@@ -12,4 +12,7 @@ export class CreateUserDto {
 
   @ApiProperty()
   name?: string;
+
+  @ApiProperty()
+  role: string;
 }

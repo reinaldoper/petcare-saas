@@ -39,6 +39,7 @@ export class UsersController {
     const token = await this.authService.generateToken(
       user.id ?? user.id,
       user.email,
+      user.role,
     );
     return { access_token: token };
   }
