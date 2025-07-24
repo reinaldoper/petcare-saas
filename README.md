@@ -47,6 +47,7 @@ Crie o arquivo .env com o seguinte conteúdo:
 ```bash
 DATABASE_URL="postgresql://user:password@localhost:5432/petcare"
 SECRET_KEY='your_secret_key_here'
+PORT=3000
 ```
 
 4. Gere o cliente Prisma:
