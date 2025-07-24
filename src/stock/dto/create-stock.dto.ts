@@ -8,7 +8,7 @@ export class CreateStockDto {
   quantity: number;
 
   @ApiProperty()
-  type: string;
+  type: 'PRODUCT' | 'VACCINE';
 
   @ApiProperty()
   validUntil: string;
