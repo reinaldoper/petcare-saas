@@ -57,4 +57,8 @@ export class UsersService {
       role: updatedUser.role,
     } as CreateUserDto;
   }
+
+  async deleteUser(userId: number) {
+    return await prisma.user.delete({ where: { id: userId } });
+  }
 }

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
@@ -64,5 +65,16 @@ export class UsersController {
     @Body() role: UpdateUserRoleDto,
   ) {
     return this.usersService.updateRole(+id, role);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async deleteUser(@Param('id') id: string) {
+    const userId = parseInt(id, 10);
+    if (isNaN(userId)) {
+      throw new UnauthorizedException('ID inválido!');
+    }
+    return this.usersService.deleteUser(userId);
   }
 }

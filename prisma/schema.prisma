@@ -20,7 +20,7 @@ model Pet {
   birthDate   DateTime
   species     String
   userId      Int
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   appointments Appointment[]
   vaccines    VaccineHistory[]
 }
@@ -31,7 +31,7 @@ model Appointment {
   date      DateTime
   reason    String
   petId     Int
-  pet       Pet      @relation(fields: [petId], references: [id])
+  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
 }
 
 model VaccineHistory {
@@ -39,7 +39,7 @@ model VaccineHistory {
   vaccine    String
   appliedAt  DateTime
   petId      Int
-  pet        Pet      @relation(fields: [petId], references: [id])
+  pet        Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
 }
 
 enum StockType {
