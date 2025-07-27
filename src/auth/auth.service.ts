@@ -9,7 +9,8 @@ export class AuthService {
     userId: number | undefined,
     email: string,
     role: string,
+    clinicId: number,
   ): Promise<string> {
-    return this.jwtService.signAsync({ sub: userId, email, role });
+    return this.jwtService.signAsync({ sub: userId, email, role, clinicId });
   }
 }

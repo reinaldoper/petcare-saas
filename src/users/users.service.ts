@@ -5,6 +5,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { UpdateUserRoleDto } from './dto/role.dto';
 
+const Role = $Enums.Role;
+
 const prisma = new PrismaClient();
 
 @Injectable()
@@ -12,9 +14,15 @@ export class UsersService {
   async create(userCreate: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(userCreate.password, 10);
     const email = userCreate.email;
-    const role = userCreate.role as $Enums.Role | undefined;
     const name = userCreate.name || null;
     const clinicId = userCreate.clinicId;
+    const existAdmin = await prisma.user.findFirst({
+      where: { role: 'ADMIN', clinicId },
+    });
+
+    const { ADMIN, CLIENT } = Role;
+
+    const role = existAdmin ? CLIENT : ADMIN;
     return await prisma.user.create({
       data: { email, password: hashedPassword, name, role, clinicId },
     });
@@ -32,9 +40,9 @@ export class UsersService {
       return {
         id: result.id,
         email: result.email,
-        name: result.name ?? undefined,
+        name: result.name,
         role: result.role,
-      } as CreateUserDto;
+      } as unknown as CreateUserDto;
     }
     return null;
   }
@@ -56,7 +64,7 @@ export class UsersService {
       email: updatedUser.email,
       name: updatedUser.name ?? undefined,
       role: updatedUser.role,
-    } as CreateUserDto;
+    } as unknown as CreateUserDto;
   }
 
   async deleteUser(userId: number) {

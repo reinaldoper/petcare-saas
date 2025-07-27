@@ -54,6 +54,7 @@ export class UsersController {
       user.id ?? user.id,
       user.email,
       user.role || 'CLIENT',
+      user.clinicId,
     );
     return { access_token: token };
   }
