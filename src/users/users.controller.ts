@@ -7,6 +7,7 @@ import {
   Param,
   UseGuards,
   Delete,
+  Get,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthService } from '../auth/auth.service';
@@ -76,5 +77,16 @@ export class UsersController {
       throw new UnauthorizedException('ID inválido!');
     }
     return this.usersService.deleteUser(userId);
+  }
+
+  @Get(':clinicId/users')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async getUsersByClinic(@Param('clinicId') clinicId: string) {
+    const clinicIdNumber = parseInt(clinicId, 10);
+    if (isNaN(clinicIdNumber)) {
+      throw new UnauthorizedException('ID da clínica inválido!');
+    }
+    return this.usersService.getUserByClinicId(clinicIdNumber);
   }
 }

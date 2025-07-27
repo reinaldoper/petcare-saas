@@ -11,15 +11,24 @@ export class ClinicService {
     if (existingClinic) {
       return null;
     }
-    const clinic = await prisma.clinic.create({ data });
+    const clinic = await prisma.clinic.create({
+      data,
+      include: { users: true, pets: true, stock: true },
+    });
     return clinic as CreateClinicDto;
   }
   async findAll(): Promise<CreateClinicDto[]> {
-    const all = await prisma.clinic.findMany();
+    const all = await prisma.clinic.findMany({
+      orderBy: { name: 'asc' },
+      include: { users: true, pets: true, stock: true },
+    });
     return all as CreateClinicDto[];
   }
   async findOne(id: number): Promise<CreateClinicDto | null> {
-    const one = await prisma.clinic.findUnique({ where: { id } });
+    const one = await prisma.clinic.findUnique({
+      where: { id },
+      include: { users: true, pets: true, stock: true },
+    });
     return one as CreateClinicDto | null;
   }
   async remove(id: number): Promise<CreateClinicDto | null> {

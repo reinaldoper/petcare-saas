@@ -62,4 +62,11 @@ export class UsersService {
   async deleteUser(userId: number) {
     return await prisma.user.delete({ where: { id: userId } });
   }
+
+  async getUserByClinicId(clinicId: number) {
+    return await prisma.user.findMany({
+      where: { clinicId },
+      include: { clinic: true, pets: true },
+    });
+  }
 }
