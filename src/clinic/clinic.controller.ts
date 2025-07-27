@@ -24,7 +24,6 @@ export class ClinicController {
   constructor(private readonly clinicService: ClinicService) {}
 
   @Post()
-  @Roles('ADMIN')
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createClinicDto: CreateClinicDto) {
     return this.clinicService.create(createClinicDto);
