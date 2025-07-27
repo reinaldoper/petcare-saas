@@ -7,6 +7,9 @@ const prisma = new PrismaClient();
 export class ClinicService {
   async create(data: CreateClinicDto): Promise<CreateClinicDto | null> {
     const { name } = data;
+    if (!name) {
+      return null;
+    }
     const existingClinic = await prisma.clinic.findUnique({ where: { name } });
     if (existingClinic) {
       return null;

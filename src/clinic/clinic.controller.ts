@@ -17,7 +17,6 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('clinic')
 @Controller('clinic')
 export class ClinicController {
@@ -36,6 +35,7 @@ export class ClinicController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
   findOne(@Param('id') id: string) {
@@ -50,6 +50,7 @@ export class ClinicController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
   update(@Param('id') id: string, @Body() updateClinicDto: CreateClinicDto) {
