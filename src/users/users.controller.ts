@@ -52,7 +52,7 @@ export class UsersController {
     const token = await this.authService.generateToken(
       user.id ?? user.id,
       user.email,
-      user.role,
+      user.role || 'CLIENT',
     );
     return { access_token: token };
   }

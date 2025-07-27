@@ -14,8 +14,9 @@ export class UsersService {
     const email = userCreate.email;
     const role = userCreate.role as $Enums.Role | undefined;
     const name = userCreate.name || null;
+    const clinicId = userCreate.clinicId;
     return await prisma.user.create({
-      data: { email, password: hashedPassword, name, role },
+      data: { email, password: hashedPassword, name, role, clinicId },
     });
   }
 

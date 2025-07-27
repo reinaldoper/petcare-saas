@@ -14,6 +14,7 @@ export const createUserSchema = z.object({
     .refine((val) => [ADMIN, CLIENT].includes(val), {
       message: `Role deve ser um ${ADMIN} ou ${CLIENT}`,
     }),
+  clinicId: z.number().int().positive('ID da clínica inválido'),
 });
 
 export const loginSchema = z.object({

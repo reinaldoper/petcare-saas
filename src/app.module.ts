@@ -7,6 +7,7 @@ import { StockModule } from './stock/stock.module';
 import { AlertModule } from './alert/alert.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ClinicModule } from './clinic/clinic.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
     AlertModule,
     UsersModule,
     AuthModule,
+    ClinicModule,
   ],
   controllers: [AppController],
   providers: [AppService],

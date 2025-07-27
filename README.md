@@ -138,6 +138,7 @@ Authorization: Bearer <access_token>
 - GET /vaccine-history → Ver histórico de vacinas
 - POST /alerts → Criar alerta de retorno
 - GET /stock → Ver estoque de produtos
+- POST /clinic → Criar Clinicas
 
 
 🧰 Scripts úteis:

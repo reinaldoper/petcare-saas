@@ -13,6 +13,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Clinic {
+  id        Int      @id @default(autoincrement())
+  name      String @unique
+  address   String
+  users     User[]
+  pets      Pet[]
+  stock     Stock[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
 model Pet {
   id          Int      @id @default(autoincrement())
   name        String
@@ -20,10 +32,13 @@ model Pet {
   birthDate   DateTime
   species     String
   userId      Int
+  clinicId    Int
+  clinic      Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   appointments Appointment[]
   vaccines    VaccineHistory[]
 }
+
 
 
 model Appointment {
@@ -53,7 +68,10 @@ model Stock {
   quantity    Int
   type        StockType
   validUntil  DateTime
+  clinicId    Int
+  clinic      Clinic     @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 }
+
 
 
 
@@ -63,10 +81,13 @@ model User {
   password  String
   name      String?
   role      Role     @default(CLIENT)
+  clinicId  Int
+  clinic    Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  pets      Pet[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  pets      Pet[]
 }
+
 
 enum Role {
   ADMIN
