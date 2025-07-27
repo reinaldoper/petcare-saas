@@ -36,12 +36,14 @@ export class ClinicController {
   }
 
   @Get(':id')
+  @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
   findOne(@Param('id') id: string) {
     return this.clinicService.findOne(+id);
   }
 
   @Delete(':id')
+  @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
   remove(@Param('id') id: string) {
     return this.clinicService.remove(+id);
