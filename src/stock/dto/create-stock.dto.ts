@@ -12,4 +12,7 @@ export class CreateStockDto {
 
   @ApiProperty()
   validUntil: string;
+
+  @ApiProperty()
+  clinicId: number;
 }

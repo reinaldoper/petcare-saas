@@ -3,6 +3,7 @@ const MSG = 'Nome inválido';
 const DATE_MSG = 'Data inválida';
 const TYPE_MSG = 'Tipo inválido';
 const QUANTITY_MSG = 'Quantidade inválida';
+const CLINIC_ID_MSG = 'ID da clínica inválido';
 type StockType = 'PRODUCT' | 'VACCINE';
 
 export const createStockSchema = z.object({
@@ -15,4 +16,5 @@ export const createStockSchema = z.object({
       message: `Tipo deve ser um 'PRODUCT' ou 'VACCINE'`,
     }),
   validUntil: z.string(DATE_MSG),
+  clinicId: z.number().int().positive(CLINIC_ID_MSG),
 });
