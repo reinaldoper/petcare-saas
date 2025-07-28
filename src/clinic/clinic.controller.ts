@@ -16,6 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { createClinicDtoSchema } from './dto/zod.dto';
 
 @ApiTags('clinic')
 @Controller('clinic')
@@ -25,6 +26,10 @@ export class ClinicController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createClinicDto: CreateClinicDto) {
+    const result = createClinicDtoSchema.safeParse(createClinicDto);
+    if (!result.success) {
+      throw new Error(result.error.message);
+    }
     return this.clinicService.create(createClinicDto);
   }
 
@@ -54,6 +59,10 @@ export class ClinicController {
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
   update(@Param('id') id: string, @Body() updateClinicDto: CreateClinicDto) {
+    const result = createClinicDtoSchema.safeParse(updateClinicDto);
+    if (!result.success) {
+      throw new Error(result.error.message);
+    }
     return this.clinicService.update(+id, updateClinicDto);
   }
 }

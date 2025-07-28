@@ -8,6 +8,7 @@ import { AlertModule } from './alert/alert.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ClinicModule } from './clinic/clinic.module';
+import { PetsModule } from './pets/pets.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ClinicModule } from './clinic/clinic.module';
     UsersModule,
     AuthModule,
     ClinicModule,
+    PetsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
