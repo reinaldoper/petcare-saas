@@ -9,14 +9,18 @@ export class PetsService {
     return await prisma.pet.create({ data: createPetDto });
   }
 
-  async findAll() {
+  async findAll({ clinicId }: { clinicId: number }) {
     return await prisma.pet.findMany({
+      where: { clinicId },
       include: { user: true, clinic: true },
     });
   }
 
   async findOne(id: number, userId: number, clinicId: number) {
-    return await prisma.pet.findUnique({ where: { id, userId, clinicId } });
+    return await prisma.pet.findUnique({
+      where: { id, userId, clinicId },
+      include: { user: true, clinic: true },
+    });
   }
 
   async remove(id: number) {

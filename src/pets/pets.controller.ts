@@ -38,8 +38,11 @@ export class PetsController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @Roles('ADMIN')
-  async findAll() {
-    return await this.petsService.findAll();
+  async findAll(@Body() body: { clinicId: number }) {
+    if (!body.clinicId || isNaN(body.clinicId)) {
+      throw new Error('clinicId is required');
+    }
+    return await this.petsService.findAll(body);
   }
 
   @Get(':id')
