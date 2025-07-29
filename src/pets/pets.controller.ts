@@ -2,13 +2,12 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Put,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { PetsService } from './pets.service';
@@ -35,7 +34,7 @@ export class PetsController {
     return await this.petsService.create(createPetDto);
   }
 
-  @Get()
+  @Patch()
   @HttpCode(HttpStatus.OK)
   @Roles('ADMIN')
   async findAll(@Body() body: { clinicId: number }) {
@@ -45,13 +44,21 @@ export class PetsController {
     return await this.petsService.findAll(body);
   }
 
-  @Get(':id')
+  @Patch('/clinic')
   @HttpCode(HttpStatus.OK)
   async findOne(
-    @Param('id') id: string,
-    @Query('clinicId') clinicId: number,
-    @Query('userId') userId: number,
+    @Body() body: { id: number; userId: number; clinicId: number },
   ) {
+    const { id, userId, clinicId } = body;
+    if (!id || isNaN(id)) {
+      throw new Error('id é requerido');
+    }
+    if (!userId || isNaN(userId)) {
+      throw new Error('userId é requerido');
+    }
+    if (!clinicId || isNaN(clinicId)) {
+      throw new Error('clinicId é requerido');
+    }
     return await this.petsService.findOne(+id, +userId, +clinicId);
   }
 
