@@ -11,7 +11,10 @@ export class StockService {
   }
 
   async findAll() {
-    return await prisma.stock.findMany();
+    return await prisma.stock.findMany({
+      orderBy: { name: 'asc' },
+      include: { clinic: true },
+    });
   }
 
   async findOne(id: number) {
