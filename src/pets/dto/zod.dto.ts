@@ -7,7 +7,10 @@ const OWNER_NAME_MSG = 'Nome do proprietário inválido';
 export const petIdSchema = z.object({
   name: z.string().min(4, NAME_MSG),
   ownerName: z.string().min(4, OWNER_NAME_MSG),
-  birthDate: z.string().min(10, DATE_MSG),
+  birthDate: z.coerce.date().refine((d) => !isNaN(d.getTime()), {
+    message: DATE_MSG,
+  }),
+
   species: z
     .string()
     .min(3, MSG)
