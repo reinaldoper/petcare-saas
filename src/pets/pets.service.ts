@@ -12,7 +12,20 @@ export class PetsService {
   async findAll({ clinicId }: { clinicId: number }) {
     return await prisma.pet.findMany({
       where: { clinicId },
-      include: { user: true, clinic: true },
+      include: {
+        user: {
+          select: {
+            email: true,
+            name: true,
+            role: true,
+            id: true,
+            clinicId: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        clinic: true,
+      },
     });
   }
 
