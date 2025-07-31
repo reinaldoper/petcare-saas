@@ -19,8 +19,8 @@ export const createStockSchema = z.object({
     .string()
     .min(10, DATE_MSG)
     .refine((val) => {
-      const date = new Date(val);
-      return !isNaN(date.getTime());
+      const date = new Date(val).toISOString();
+      return date;
     }, DATE_MSG),
   clinicId: z.number().int().positive(CLINIC_ID_MSG),
 });
