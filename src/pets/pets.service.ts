@@ -29,7 +29,7 @@ export class PetsService {
       },
     });
 
-    return users.map((user) => user.user.role === 'CLIENT');
+    return users;
   }
 
   async findOne(id: number, userId: number, clinicId: number) {
