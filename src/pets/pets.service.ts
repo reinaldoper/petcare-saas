@@ -29,7 +29,9 @@ export class PetsService {
       },
     });
 
-    return users;
+    const filtered = users.filter((pet) => pet.user?.role === 'CLIENT');
+
+    return filtered;
   }
 
   async findOne(id: number, userId: number, clinicId: number) {

@@ -36,8 +36,8 @@ export class StockController {
   @Get()
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
-  async findAll() {
-    return await this.service.findAll();
+  async findAll(@Param('id') clinicId: number) {
+    return await this.service.findAll(clinicId);
   }
 
   @Get(':id')

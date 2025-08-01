@@ -18,8 +18,9 @@ export class StockService {
     });
   }
 
-  async findAll() {
+  async findAll(clinicId: number) {
     return await prisma.stock.findMany({
+      where: { clinicId },
       orderBy: { name: 'asc' },
       include: { clinic: true },
     });
