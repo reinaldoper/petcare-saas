@@ -14,7 +14,7 @@ export class UsersService {
   async create(userCreate: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(userCreate.password, 10);
     const email = userCreate.email;
-    const name = userCreate.name || null;
+    const name = userCreate.name;
     const clinicId = userCreate.clinicId;
     const existAdmin = await prisma.user.findFirst({
       where: { role: 'ADMIN', clinicId },
