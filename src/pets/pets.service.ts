@@ -25,6 +25,7 @@ export class PetsService {
           },
         },
         clinic: true,
+        vaccines: true,
       },
     });
   }
