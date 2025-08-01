@@ -33,17 +33,10 @@ export class StockController {
     return await this.service.create(dto);
   }
 
-  @Get()
+  @Get(':clinicId')
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
-  async findAll(@Param('id') clinicId: number) {
-    return await this.service.findAll(clinicId);
-  }
-
-  @Get(':id')
-  @Roles('ADMIN')
-  @HttpCode(HttpStatus.OK)
-  async findOne(@Param('id') id: string) {
-    return await this.service.findOne(+id);
+  async findOne(@Param('clinicId') clinicId: string) {
+    return await this.service.findMany(+clinicId);
   }
 }

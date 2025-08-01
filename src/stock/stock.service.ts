@@ -18,15 +18,11 @@ export class StockService {
     });
   }
 
-  async findAll(clinicId: number) {
+  async findMany(clinicId: number) {
     return await prisma.stock.findMany({
       where: { clinicId },
       orderBy: { name: 'asc' },
       include: { clinic: true },
     });
-  }
-
-  async findOne(id: number) {
-    return await prisma.stock.findUnique({ where: { id } });
   }
 }
