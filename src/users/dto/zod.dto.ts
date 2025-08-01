@@ -1,12 +1,13 @@
 import z from 'zod';
 const MSG = 'Email inválido';
+const NAME = 'Nome invildo';
 const ADMIN = 'ADMIN';
 const CLIENT = 'CLIENT';
 
 export const createUserSchema = z.object({
   email: z.email(MSG),
   password: z.string().min(6),
-  name: z.string().optional(),
+  name: z.string().min(4, NAME),
   role: z
     .string()
     .min(1)
