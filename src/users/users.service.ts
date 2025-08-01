@@ -72,9 +72,13 @@ export class UsersService {
   }
 
   async getUserByClinicId(clinicId: number) {
-    return await prisma.user.findMany({
+    const users = await prisma.user.findMany({
       where: { clinicId },
+      orderBy: { createdAt: 'asc' },
       include: { clinic: true, pets: true },
     });
+
+    const filtered = users.filter((user) => user.role === 'CLIENT');
+    return filtered;
   }
 }
