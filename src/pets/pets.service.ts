@@ -10,7 +10,7 @@ export class PetsService {
   }
 
   async findAll({ clinicId }: { clinicId: number }) {
-    return await prisma.pet.findMany({
+    const users = await prisma.pet.findMany({
       where: { clinicId },
       include: {
         user: {
@@ -28,6 +28,8 @@ export class PetsService {
         vaccines: true,
       },
     });
+
+    return users.map((user) => user.user.role === 'CLIENT');
   }
 
   async findOne(id: number, userId: number, clinicId: number) {
