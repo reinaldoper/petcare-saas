@@ -9,4 +9,15 @@ export class CreateVaccineHistoryDto {
 
   @ApiProperty()
   petId: number;
+
+  @ApiProperty()
+  clinicId: number;
+}
+
+export class CreateClinicIdDto {
+  @ApiProperty()
+  clinicId: number;
+
+  @ApiProperty()
+  petId: number;
 }

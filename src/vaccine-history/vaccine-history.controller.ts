@@ -7,12 +7,19 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Patch,
 } from '@nestjs/common';
 import { VaccineHistoryService } from './vaccine-history.service';
-import { CreateVaccineHistoryDto } from './dto/create-vaccine-history.dto';
+import {
+  CreateVaccineHistoryDto,
+  CreateClinicIdDto,
+} from './dto/create-vaccine-history.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { createVaccineSchema } from './dto/zod.dto';
+import {
+  createVaccineSchema,
+  createVaccineHistoryDtoSchema,
+} from './dto/zod.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
@@ -33,10 +40,14 @@ export class VaccineHistoryController {
     return await this.service.create(dto);
   }
 
-  @Get()
+  @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  async findAll() {
-    return await this.service.findAll();
+  async findAll(@Param('id') id: string, @Body() body: CreateClinicIdDto) {
+    const result = createVaccineHistoryDtoSchema.safeParse(body);
+    if (!result.success) {
+      throw new Error(result.error.message);
+    }
+    return await this.service.findAll(+id, body);
   }
 
   @Get(':id')
