@@ -13,11 +13,15 @@ export class AppointmentService {
     });
   }
 
-  async findAll() {
-    return await prisma.appointment.findMany();
+  async findAll(body: { clinicId: number }) {
+    const { clinicId } = body;
+    return await prisma.appointment.findMany({
+      where: { clinicId },
+      orderBy: { date: 'asc' },
+    });
   }
 
-  async findOne(id: number) {
-    return await prisma.appointment.findUnique({ where: { id } });
+  async findOne(id: number, clinicId: number) {
+    return await prisma.appointment.findUnique({ where: { id, clinicId } });
   }
 }

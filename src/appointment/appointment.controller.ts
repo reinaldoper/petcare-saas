@@ -7,6 +7,8 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Patch,
+  Query,
 } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
@@ -32,17 +34,23 @@ export class AppointmentController {
     return await this.appointmentService.create(dto);
   }
 
-  @Get()
+  @Patch()
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
-  async findAll() {
-    return await this.appointmentService.findAll();
+  async findAll(@Body() body: { clinicId: number }) {
+    if (!body.clinicId || isNaN(body.clinicId)) {
+      throw new Error('clinicId is required');
+    }
+    return await this.appointmentService.findAll(body);
   }
 
   @Get(':id')
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
-  async findOne(@Param('id') id: string) {
-    return await this.appointmentService.findOne(+id);
+  async findOne(
+    @Param('id') id: string,
+    @Query() clinicId: { clinicId: number },
+  ) {
+    return await this.appointmentService.findOne(+id, clinicId.clinicId);
   }
 }

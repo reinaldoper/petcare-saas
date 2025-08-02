@@ -20,6 +20,8 @@ model Clinic {
   users     User[]
   pets      Pet[]
   stock     Stock[]
+  historic VaccineHistory[]
+  appointment Appointment[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -46,15 +48,21 @@ model Appointment {
   date      DateTime
   reason    String
   petId     Int
+  clinicId  Int
+  
   pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  clinic    Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 }
+
 
 model VaccineHistory {
   id         Int      @id @default(autoincrement())
   vaccine    String
   appliedAt  DateTime
   petId      Int
+  clinicId  Int
   pet        Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+  clinic    Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 }
 
 enum StockType {

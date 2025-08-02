@@ -9,4 +9,7 @@ export class CreateAppointmentDto {
 
   @ApiProperty()
   petId: number;
+
+  @ApiProperty()
+  clinicId: number;
 }
