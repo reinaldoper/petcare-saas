@@ -7,6 +7,8 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  Delete,
+  Put,
 } from '@nestjs/common';
 import { StockService } from './stock.service';
 import { CreateStockDto } from './dto/create-stock.dto';
@@ -37,6 +39,43 @@ export class StockController {
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
   async findOne(@Param('clinicId') clinicId: string) {
+    if (!clinicId || isNaN(+clinicId)) {
+      throw new Error('clinicId inválido!');
+    }
     return await this.service.findMany(+clinicId);
+  }
+
+  @Get(':id/stock')
+  @Roles('ADMIN')
+  @HttpCode(HttpStatus.OK)
+  async getStockById(@Param('id') id: string) {
+    if (!id || isNaN(+id)) {
+      throw new Error('id inválido!');
+    }
+    return await this.service.getStockById(+id);
+  }
+
+  @Delete(':id')
+  @Roles('ADMIN')
+  @HttpCode(HttpStatus.OK)
+  async remove(@Param('id') id: string) {
+    if (!id || isNaN(+id)) {
+      throw new Error('id inválido!');
+    }
+    return await this.service.remove(+id);
+  }
+
+  @Put(':id')
+  @Roles('ADMIN')
+  @HttpCode(HttpStatus.OK)
+  async update(@Param('id') id: string, @Body() data: CreateStockDto) {
+    const result = createStockSchema.safeParse(data);
+    if (!result.success) {
+      throw new Error(result.error.message);
+    }
+    if (!id || isNaN(+id)) {
+      throw new Error('id inválido!');
+    }
+    return await this.service.updateStock(+id, data);
   }
 }

@@ -25,4 +25,16 @@ export class StockService {
       include: { clinic: true },
     });
   }
+
+  async getStockById(id: number) {
+    return await prisma.stock.findUnique({ where: { id } });
+  }
+
+  async remove(id: number) {
+    return await prisma.stock.delete({ where: { id } });
+  }
+
+  async updateStock(id: number, data: CreateStockDto) {
+    return await prisma.stock.update({ where: { id }, data });
+  }
 }
