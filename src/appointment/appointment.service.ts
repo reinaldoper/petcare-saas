@@ -18,6 +18,7 @@ export class AppointmentService {
     return await prisma.appointment.findMany({
       where: { clinicId },
       orderBy: { date: 'asc' },
+      include: { pet: true },
     });
   }
 
