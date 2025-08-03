@@ -6,3 +6,7 @@ export const createClinicDtoSchema = z.object({
   name: z.string().min(4, MSG),
   address: z.string().min(10, ADDRESS_MSG),
 });
+
+export const nameSchema = z.object({
+  name: z.string().min(4, MSG),
+});

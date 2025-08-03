@@ -11,12 +11,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ClinicService } from './clinic.service';
-import { CreateClinicDto } from './dto/create-clinic.dto';
+import { CreateClinicDto, NameDto } from './dto/create-clinic.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { createClinicDtoSchema } from './dto/zod.dto';
+import { createClinicDtoSchema, nameSchema } from './dto/zod.dto';
 
 @ApiTags('clinic')
 @Controller('clinic')
@@ -52,6 +52,16 @@ export class ClinicController {
   @HttpCode(HttpStatus.OK)
   remove(@Param('id') id: string) {
     return this.clinicService.remove(+id);
+  }
+
+  @Get('search/:name')
+  @HttpCode(HttpStatus.OK)
+  search(@Param('name') name: NameDto['name']) {
+    const result = nameSchema.safeParse({ name });
+    if (!result.success) {
+      throw new Error(result.error.message);
+    }
+    return this.clinicService.search(name);
   }
 
   @Put(':id')

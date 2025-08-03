@@ -43,6 +43,13 @@ export class ClinicService {
     return deleted as CreateClinicDto | null;
   }
 
+  async search(name: string): Promise<CreateClinicDto> {
+    const clinics = await prisma.clinic.findUnique({
+      where: { name },
+    });
+    return clinics as unknown as CreateClinicDto;
+  }
+
   async update(
     id: number,
     data: CreateClinicDto,

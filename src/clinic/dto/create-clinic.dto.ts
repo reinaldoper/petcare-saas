@@ -7,3 +7,8 @@ export class CreateClinicDto {
   @ApiProperty()
   address: string;
 }
+
+export class NameDto {
+  @ApiProperty()
+  name: string;
+}
