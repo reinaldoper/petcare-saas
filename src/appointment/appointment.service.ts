@@ -25,4 +25,16 @@ export class AppointmentService {
   async findOne(id: number, clinicId: number) {
     return await prisma.appointment.findUnique({ where: { id, clinicId } });
   }
+
+  async updateAppointment(id: number, data: CreateAppointmentDto) {
+    const date = new Date(data.date).toISOString();
+    return await prisma.appointment.update({
+      where: { id },
+      data: { ...data, date },
+    });
+  }
+
+  async remove(id: number) {
+    return await prisma.appointment.delete({ where: { id } });
+  }
 }

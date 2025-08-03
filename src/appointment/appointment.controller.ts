@@ -9,6 +9,7 @@ import {
   HttpStatus,
   Patch,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
@@ -39,7 +40,7 @@ export class AppointmentController {
   @HttpCode(HttpStatus.OK)
   async findAll(@Body() body: { clinicId: number }) {
     if (!body.clinicId || isNaN(body.clinicId)) {
-      throw new Error('clinicId is required');
+      throw new Error('ClinicId inválido!');
     }
     return await this.appointmentService.findAll(body);
   }
@@ -52,5 +53,26 @@ export class AppointmentController {
     @Query() clinicId: { clinicId: number },
   ) {
     return await this.appointmentService.findOne(+id, clinicId.clinicId);
+  }
+
+  @Patch(':id')
+  @Roles('ADMIN')
+  @HttpCode(HttpStatus.OK)
+  async update(@Param('id') id: string, @Body() data: CreateAppointmentDto) {
+    const result = createAppointmentDtoSchema.safeParse(data);
+    if (!result.success) {
+      throw new Error(result.error.message);
+    }
+    return await this.appointmentService.updateAppointment(+id, data);
+  }
+
+  @Roles('ADMIN')
+  @HttpCode(HttpStatus.OK)
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    if (isNaN(+id)) {
+      throw new Error('Id inválido!');
+    }
+    return await this.appointmentService.remove(+id);
   }
 }
