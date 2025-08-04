@@ -5,7 +5,13 @@ const DATE_MSG = 'Data inválida';
 
 export const createVaccineSchema = z.object({
   vaccine: z.string(MSG),
-  appliedAt: z.string(DATE_MSG),
+  appliedAt: z
+    .string()
+    .min(10, DATE_MSG)
+    .refine((val) => {
+      const date = new Date(val).toISOString();
+      return date;
+    }, DATE_MSG),
   petId: z.number().int().positive(),
   clinicId: z.number().int().positive(),
 });
