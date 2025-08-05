@@ -4,6 +4,7 @@ import {
   OnGatewayInit,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { AlertService } from './alert.service';
 
 @WebSocketGateway({
   cors: {
@@ -14,12 +15,17 @@ import { Server } from 'socket.io';
 export class AlertsGateway implements OnGatewayInit {
   @WebSocketServer()
   server: Server;
+  constructor(private readonly alertService: AlertService) {}
 
   afterInit() {
-    console.log('WebSocket server inicializado.');
+    setInterval(() => {
+      this.checkUpcomingAlerts();
+    }, 60000);
   }
 
-  sendUpcomingAlert(data: any) {
-    this.server.emit('upcoming-alert', data);
+  private async checkUpcomingAlerts() {
+    const upcomingAlerts = await this.alertService.findUpcoming();
+    this.server.emit('upcoming-alert', upcomingAlerts);
+    console.log('Emiti upcoming-alert via Gateway');
   }
 }

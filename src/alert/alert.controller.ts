@@ -16,11 +16,4 @@ export class AlertController {
   async findUpcoming() {
     return await this.service.findUpcoming();
   }
-
-  @Get('emit-test')
-  @HttpCode(HttpStatus.OK)
-  emitTest() {
-    this.alertsGateway.sendUpcomingAlert({ test: 'funcionou' });
-    return { ok: true, test: 'funcionou' };
-  }
 }
