@@ -8,14 +8,15 @@ import { Server } from 'socket.io';
 @WebSocketGateway({
   cors: {
     origin: '*',
+    methods: ['GET', 'POST'],
   },
 })
 export class AlertsGateway implements OnGatewayInit {
   @WebSocketServer()
   server: Server;
 
-  afterInit(server: Server) {
-    console.log(server, 'WebSocket server initialized');
+  afterInit() {
+    console.log('WebSocket server inicializado.');
   }
 
   sendUpcomingAlert(data: any) {

@@ -49,7 +49,6 @@ model Appointment {
   reason    String
   petId     Int
   clinicId  Int
-  
   pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
   clinic    Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 }
