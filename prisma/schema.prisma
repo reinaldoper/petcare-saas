@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,73 +8,71 @@ datasource db {
 }
 
 model Clinic {
-  id        Int      @id @default(autoincrement())
-  name      String @unique
-  address   String
-  users     User[]
-  pets      Pet[]
-  stock     Stock[]
-  historic VaccineHistory[]
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  address     String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
   appointment Appointment[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  pets        Pet[]
+  plan        Plan?
+  stock       Stock[]
+  users       User[]
+  historic    VaccineHistory[]
 }
-
 
 model Pet {
-  id          Int      @id @default(autoincrement())
-  name        String
-  ownerName   String
-  birthDate   DateTime
-  species     String
-  userId      Int
-  clinicId    Int
-  clinic      Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           Int              @id @default(autoincrement())
+  name         String
+  ownerName    String
+  birthDate    DateTime
+  species      String
+  userId       Int
+  clinicId     Int
   appointments Appointment[]
-  vaccines    VaccineHistory[]
+  clinic       Clinic           @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vaccines     VaccineHistory[]
 }
 
-
+model Plan {
+  id        Int      @id @default(autoincrement())
+  type      PlanType
+  clinicId  Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  clinic    Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+}
 
 model Appointment {
-  id        Int      @id @default(autoincrement())
-  date      DateTime
-  reason    String
-  petId     Int
-  clinicId  Int
-  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
-  clinic    Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  id       Int      @id @default(autoincrement())
+  date     DateTime
+  reason   String
+  petId    Int
+  clinicId Int
+  clinic   Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  pet      Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
 }
-
 
 model VaccineHistory {
-  id         Int      @id @default(autoincrement())
-  vaccine    String
-  appliedAt  DateTime
-  petId      Int
+  id        Int      @id @default(autoincrement())
+  vaccine   String
+  appliedAt DateTime
+  petId     Int
   clinicId  Int
-  pet        Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
   clinic    Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
-}
-
-enum StockType {
-  PRODUCT
-  VACCINE
+  pet       Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
 }
 
 model Stock {
-  id          Int        @id @default(autoincrement())
-  name        String
-  quantity    Int
-  type        StockType
-  validUntil  DateTime
-  clinicId    Int
-  clinic      Clinic     @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  id         Int       @id @default(autoincrement())
+  name       String
+  quantity   Int
+  type       StockType
+  validUntil DateTime
+  clinicId   Int
+  clinic     Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 }
-
-
-
 
 model User {
   id        Int      @id @default(autoincrement())
@@ -89,15 +81,23 @@ model User {
   name      String   @unique
   role      Role     @default(CLIENT)
   clinicId  Int
-  clinic    Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
-  pets      Pet[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  pets      Pet[]
+  clinic    Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 }
 
+enum PlanType {
+  FREE
+  PAY
+}
+
+enum StockType {
+  PRODUCT
+  VACCINE
+}
 
 enum Role {
   ADMIN
   CLIENT
 }
-
