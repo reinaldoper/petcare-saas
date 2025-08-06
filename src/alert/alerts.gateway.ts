@@ -26,6 +26,8 @@ export class AlertsGateway implements OnGatewayInit {
     }, 86400000);
   }
 
+  //teste
+
   private async checkUpcomingAlerts() {
     const upcomingAlerts = await this.alertService.findUpcoming();
 
