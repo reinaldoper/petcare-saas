@@ -37,7 +37,7 @@ model Pet {
 
 model Plan {
   id        Int      @id @default(autoincrement())
-  type      PlanType
+  type      PlanType @default(FREE)
   clinicId  Int      @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
