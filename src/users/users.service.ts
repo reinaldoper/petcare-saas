@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaClient, $Enums } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -23,6 +23,26 @@ export class UsersService {
     const { ADMIN, CLIENT } = Role;
 
     const role = existAdmin ? CLIENT : ADMIN;
+
+    const clinic = await prisma.clinic.findUnique({
+      where: { id: clinicId },
+      select: { plan: true },
+    });
+
+    if (!clinic) {
+      throw new ForbiddenException('Clínica não encontrada.');
+    }
+    if (clinic.plan?.type === 'FREE') {
+      const userCount = await prisma.user.count({
+        where: { clinicId },
+      });
+
+      if (userCount >= 5) {
+        throw new ForbiddenException(
+          'Limite de 5 usuários no plano FREE atingido.',
+        );
+      }
+    }
     return await prisma.user.create({
       data: { email, password: hashedPassword, name, role, clinicId },
     });

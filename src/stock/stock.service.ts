@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { CreateStockDto } from './dto/create-stock.dto';
 
@@ -7,6 +7,28 @@ const prisma = new PrismaClient();
 @Injectable()
 export class StockService {
   async create(data: CreateStockDto) {
+    const { clinicId } = data;
+
+    const clinic = await prisma.clinic.findUnique({
+      where: { id: clinicId },
+      select: { plan: true },
+    });
+
+    if (!clinic) {
+      throw new ForbiddenException('Clínica não encontrada.');
+    }
+
+    if (clinic.plan?.type === 'FREE') {
+      const stockCount = await prisma.stock.count({
+        where: { clinicId },
+      });
+
+      if (stockCount >= 50) {
+        throw new ForbiddenException(
+          'Limite de 50 itens no estoque atingido para o plano gratuito.',
+        );
+      }
+    }
     return await prisma.stock.create({
       data: {
         name: data.name,

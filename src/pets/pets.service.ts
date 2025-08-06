@@ -6,6 +6,25 @@ const prisma = new PrismaClient();
 @Injectable()
 export class PetsService {
   async create(createPetDto: CreatePetDto) {
+    const clinicId = createPetDto.clinicId;
+    const clinic = await prisma.clinic.findUnique({
+      where: { id: clinicId },
+      select: { plan: true },
+    });
+
+    if (!clinic) {
+      throw new Error('Clínica não encontrada.');
+    }
+    if (clinic.plan?.type === 'FREE') {
+      const petCount = await prisma.pet.count({
+        where: { clinicId },
+      });
+
+      if (petCount >= 10) {
+        throw new Error('Limite de 10 pets atingido para o plano gratuito.');
+      }
+    }
+
     return await prisma.pet.create({ data: createPetDto });
   }
 
