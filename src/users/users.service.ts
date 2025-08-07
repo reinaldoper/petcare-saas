@@ -14,48 +14,47 @@ const prisma = new PrismaClient();
 export class UsersService {
   async create(userCreate: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(userCreate.password, 10);
-    const email = userCreate.email;
-    const name = userCreate.name;
-    const clinicId = userCreate.clinicId;
+    const { email, name, clinicId } = userCreate;
+
     const existAdmin = await prisma.user.findFirst({
-      where: { role: 'ADMIN', clinicId },
+      where: { role: Role.ADMIN, clinicId },
     });
 
-    const { ADMIN, CLIENT } = Role;
-    const { FREE } = Type;
-
-    const role = existAdmin ? CLIENT : ADMIN;
-
-    if (role === ADMIN) {
-      await prisma.plan.create({
-        data: {
-          type: FREE,
-          clinicId,
-        },
-      });
-    }
-
-    const clinic = await prisma.clinic.findUnique({
-      where: { id: clinicId },
-      select: { plan: true },
-    });
-
-    if (!clinic) {
-      throw new ForbiddenException('Clínica não encontrada.');
-    }
-    if (clinic.plan?.type === FREE) {
-      const userCount = await prisma.user.count({
-        where: { clinicId },
-      });
-
-      if (userCount >= 5) {
-        throw new ForbiddenException(
-          'Limite de 5 usuários no plano FREE atingido.',
-        );
+    const role = existAdmin ? Role.CLIENT : Role.ADMIN;
+    return await prisma.$transaction(async (tx) => {
+      if (role === Role.ADMIN) {
+        await tx.plan.create({
+          data: {
+            type: Type.FREE,
+            clinicId,
+          },
+        });
       }
-    }
-    return await prisma.user.create({
-      data: { email, password: hashedPassword, name, role, clinicId },
+
+      const clinic = await tx.clinic.findUnique({
+        where: { id: clinicId },
+        select: { plan: true },
+      });
+
+      if (!clinic) {
+        throw new ForbiddenException('Clínica não encontrada.');
+      }
+
+      if (clinic.plan?.type === Type.FREE) {
+        const userCount = await tx.user.count({
+          where: { clinicId },
+        });
+
+        if (userCount >= 5) {
+          throw new ForbiddenException(
+            'Limite de 5 usuários no plano FREE atingido.',
+          );
+        }
+      }
+
+      return await tx.user.create({
+        data: { email, password: hashedPassword, name, role, clinicId },
+      });
     });
   }
 
