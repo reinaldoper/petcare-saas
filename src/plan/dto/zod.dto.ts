@@ -11,6 +11,7 @@ export const createPlanDtoSchema = z.object({
     .min(4)
     .refine((val) => val in type, {
       message: TYPE_MSG,
-    }),
+    })
+    .optional(),
   clinicId: z.number().int().positive(CLINIC_ID_MSG),
 });

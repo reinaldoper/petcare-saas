@@ -16,7 +16,7 @@ export class ClinicService {
     }
     const clinic = await prisma.clinic.create({
       data,
-      include: { users: true, pets: true, stock: true },
+      include: { users: true, pets: true, stock: true, plan: true },
     });
     return clinic as CreateClinicDto;
   }
