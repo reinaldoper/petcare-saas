@@ -6,6 +6,7 @@ import { LoginDto } from './dto/login.dto';
 import { UpdateUserRoleDto } from './dto/role.dto';
 
 const Role = $Enums.Role;
+const Type = $Enums.PlanType;
 
 const prisma = new PrismaClient();
 
@@ -21,13 +22,14 @@ export class UsersService {
     });
 
     const { ADMIN, CLIENT } = Role;
+    const { FREE } = Type;
 
     const role = existAdmin ? CLIENT : ADMIN;
 
-    if (role === 'ADMIN') {
+    if (role === ADMIN) {
       await prisma.plan.create({
         data: {
-          type: 'FREE',
+          type: FREE,
           clinicId,
         },
       });
@@ -41,7 +43,7 @@ export class UsersService {
     if (!clinic) {
       throw new ForbiddenException('Clínica não encontrada.');
     }
-    if (clinic.plan?.type === 'FREE') {
+    if (clinic.plan?.type === FREE) {
       const userCount = await prisma.user.count({
         where: { clinicId },
       });
