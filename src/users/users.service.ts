@@ -24,6 +24,15 @@ export class UsersService {
 
     const role = existAdmin ? CLIENT : ADMIN;
 
+    if (role === 'ADMIN') {
+      await prisma.plan.create({
+        data: {
+          type: 'FREE',
+          clinicId,
+        },
+      });
+    }
+
     const clinic = await prisma.clinic.findUnique({
       where: { id: clinicId },
       select: { plan: true },
