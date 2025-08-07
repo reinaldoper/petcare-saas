@@ -20,7 +20,7 @@ export class PaymentsService {
       body: {
         plan_id: planId,
         payer_email: payerEmail,
-        back_url: 'myapp-saas://assinatura/sucesso',
+        back_url: 'saasexpo://assinatura/sucesso',
       },
     };
 
