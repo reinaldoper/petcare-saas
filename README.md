@@ -1,6 +1,7 @@
 # 🐾 PetCare SaaS - Backend
 
 Este projeto é uma API RESTful para gerenciamento de pet shops e clínicas veterinárias, desenvolvida com **NestJS**, **Prisma**, **Swagger** e **JWT Authentication**.
+Usa API do mercado pago para assinatura do plano.
 
 ---
 
@@ -120,6 +121,49 @@ Resposta:
   "access_token": "jwt_token_aqui"
 }
 ```
+
+---
+
+### Rotas do PaymentsController
+- POST /payments/subscribe
+
+1. Cria uma nova assinatura para o usuário com o email informado, utilizando a API do MercadoPago. 
+
+- Proteção: Esta rota está protegida por autenticação JWT e autorização baseada em roles.
+    ◦ Guarda: JwtAuthGuard (requisição deve conter token JWT válido)
+    ◦ Guarda: RolesGuard (somente usuários com role ADMIN podem acessar) 
+
+- Corpo da requisição (JSON):
+
+
+```json
+{
+  "email": "usuario@exemplo.com"
+}
+```
+
+
+- Validação: O corpo da requisição é validado usando zod com o schema createPaymentDtoSchema. Caso a validação falhe, um erro é lançado com a mensagem de validação.
+- Resposta: Retorna a resposta da criação da assinatura no MercadoPago, que inclui detalhes da assinatura criada.
+- Exemplo de uso:
+
+
+```bash
+curl -X POST http://localhost:3000/payments/subscribe \
+  -H "Authorization: Bearer <seu_token_jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"email": "usuario@exemplo.com"}'
+```
+
+---
+
+
+### Fluxo interno:
+1. O controlador valida o corpo da requisição.
+2. Chama o método createSubscription(email) do PaymentsService.
+3. O serviço cria uma assinatura no MercadoPago usando o plano configurado na variável ambiente MERCADO_PAGO_PLAN_ID.
+4. Retorna a resposta da API do MercadoPago para o cliente.
+
 
 🔒 Rotas Protegidas
 Todas as demais rotas da aplicação exigem autenticação via JWT.
