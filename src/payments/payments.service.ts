@@ -20,7 +20,7 @@ export class PaymentsService {
     const subscriptionData = {
       plan_id: planId,
       payer_email: payerEmail,
-      back_url: 'https://github.com/reinaldoper/site-retorno',
+      back_url: 'https://site-retorno.vercel.app/',
       reason: 'Assinatura mensal',
       auto_recurring: {
         frequency: 1,
@@ -37,7 +37,7 @@ export class PaymentsService {
 
       const subscriptionId = response.id;
 
-      const redirectUrl = `https://github.com/reinaldoper/site-retorno?subscription_id=${subscriptionId}`;
+      const redirectUrl = `https://site-retorno.vercel.app/?subscription_id=${subscriptionId}`;
 
       return {
         init_point: response.init_point,
