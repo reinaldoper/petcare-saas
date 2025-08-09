@@ -22,7 +22,7 @@ export class SubscriptionService {
 
     const data = subscriptionDetails;
 
-    return prisma.subscription.create({
+    await prisma.subscription.create({
       data: {
         subscriptionId: data.id || '',
         payerId: data.payer_id || 1,
@@ -48,5 +48,10 @@ export class SubscriptionService {
         },
       },
     });
+
+    return {
+      status: data.status || 'pending',
+      subscription_id: data.id || '',
+    };
   }
 }
