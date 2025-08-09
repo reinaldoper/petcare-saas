@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { MercadoPagoConfig, PreApproval } from 'mercadopago';
 
-const planId = process.env.MERCADO_PAGO_PLAN_ID || '';
+const planId =
+  process.env.MERCADO_PAGO_PLAN_ID || '1a8c6e8d-7b8c-4b8c-8b8c-8b8c8b8c8b8c';
 
 @Injectable()
 export class PaymentsService {
@@ -17,14 +18,35 @@ export class PaymentsService {
 
   async createSubscription(payerEmail: string) {
     const subscriptionData = {
-      body: {
-        plan_id: planId,
-        payer_email: payerEmail,
-        back_url: 'saasexpo://assinatura/sucesso',
+      plan_id: planId,
+      payer_email: payerEmail,
+      back_url: 'https://github.com/reinaldoper/site-retorno',
+      reason: 'Assinatura mensal',
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: 'months',
+        transaction_amount: 49.9,
+        currency_id: 'BRL',
       },
     };
 
-    const response = await this.mercadopago.create(subscriptionData);
-    return response;
+    try {
+      const response = await this.mercadopago.create({
+        body: subscriptionData,
+      });
+
+      const subscriptionId = response.id;
+
+      const redirectUrl = `https://github.com/reinaldoper/site-retorno?subscription_id=${subscriptionId}`;
+
+      return {
+        init_point: response.init_point,
+        redirectUrl,
+        subscriptionId,
+      };
+    } catch (error) {
+      console.error('Erro ao criar assinatura:', error);
+      throw error;
+    }
   }
 }

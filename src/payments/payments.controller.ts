@@ -5,7 +5,9 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { CreatePaymentDto } from './dto/create-payments.dto';
 import { createPaymentDtoSchema } from './dto/zod.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('payments')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('payments')
 export class PaymentsController {

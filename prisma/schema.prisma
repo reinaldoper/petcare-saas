@@ -101,3 +101,36 @@ enum Role {
   ADMIN
   CLIENT
 }
+
+model Subscription {
+  id        Int      @id @default(autoincrement())
+  payerId                 BigInt
+  payerEmail              String? 
+  status                  String
+  reason                  String
+  dateCreated             DateTime
+  lastModified            DateTime
+  nextPaymentDate         DateTime
+  initPoint               String
+  subscriptionId          String
+  applicationId           BigInt
+  collectorId             BigInt
+  backUrl                 String
+
+  autoRecurring           AutoRecurring @relation(fields: [autoRecurringId], references: [id])
+  autoRecurringId         Int
+
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+model AutoRecurring {
+  id                 Int      @id @default(autoincrement())
+  frequency          Int
+  frequencyType      String
+  transactionAmount  Float
+  currencyId         String
+
+  subscription       Subscription[]
+}
+
