@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, HttpCode } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -6,6 +6,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { CreatePaymentDto } from './dto/create-payments.dto';
 import { createPaymentDtoSchema } from './dto/zod.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { WebhookDto } from './dto/create-webhook.dto';
 
 @ApiTags('payments')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -26,5 +27,26 @@ export class PaymentsController {
       throw new Error(validation.error.message);
     }
     return this.paymentsService.createSubscription(body.email);
+  }
+
+  @Post('pix')
+  @Roles('ADMIN')
+  async createPixPayment(@Body() body: CreatePaymentDto) {
+    const validation = createPaymentDtoSchema.safeParse(body);
+    if (!validation.success) {
+      throw new Error(validation.error.message);
+    }
+    return this.paymentsService.createPixPayment(body.email);
+  }
+
+  @Post('webhook')
+  @HttpCode(200)
+  async handleWebhook(@Body() body: WebhookDto) {
+    const paymentId = body.data?.id;
+
+    const paymentDetails =
+      await this.paymentsService.getPaymentDetails(paymentId);
+
+    return paymentDetails;
   }
 }

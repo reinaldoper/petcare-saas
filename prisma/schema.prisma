@@ -134,3 +134,14 @@ model AutoRecurring {
   subscription       Subscription[]
 }
 
+model Payment {
+  id            Int      @id @default(autoincrement())
+  paymentId     Int   @unique
+  status        String
+  method        String 
+  amount        Float
+  payerEmail    String
+  createdAt     DateTime @default(now())
+}
+
+
