@@ -9,12 +9,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { WebhookDto } from './dto/create-webhook.dto';
 
 @ApiTags('payments')
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Post('subscribe')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   async subscribe(
     @Body()
@@ -30,6 +30,7 @@ export class PaymentsController {
   }
 
   @Post('pix')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   async createPixPayment(@Body() body: CreatePaymentDto) {
     const validation = createPaymentDtoSchema.safeParse(body);
