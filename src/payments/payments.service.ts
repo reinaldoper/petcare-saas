@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MercadoPagoConfig, PreApproval, Payment } from 'mercadopago';
 import { PrismaClient } from '@prisma/client';
+import { PaymentGateway } from './payment.gateway';
 
 const planId =
   process.env.MERCADO_PAGO_PLAN_ID || '1a8c6e8d-7b8c-4b8c-8b8c-8b8c8b8c8b8c';
@@ -12,7 +13,7 @@ export class PaymentsService {
   private mercadopago: PreApproval;
   private mercadopix: Payment;
 
-  constructor() {
+  constructor(private paymentGateway: PaymentGateway) {
     const client = new MercadoPagoConfig({
       accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN || '',
     });
@@ -79,6 +80,11 @@ export class PaymentsService {
   async getPaymentDetails(paymentId: string) {
     try {
       const response = await this.mercadopix.get({ id: paymentId });
+      this.paymentGateway.notifyPaymentUpdate({
+        paymentId: response.id,
+        status: response.status,
+        amount: response.transaction_amount,
+      });
 
       if (response.status === 'approved') {
         await prisma.payment.create({
@@ -90,9 +96,19 @@ export class PaymentsService {
             payerEmail: response.payer?.email || '',
           },
         });
+      } else {
+        await prisma.payment.create({
+          data: {
+            paymentId: response.id || 1,
+            status: response.status || 'pending',
+            method: response.payment_method?.type || '',
+            amount: response.transaction_amount || 0,
+            payerEmail: response.payer?.email || '',
+          },
+        });
       }
 
-      return { received: true };
+      return { received: response.status === 'approved' ? true : false };
     } catch (error) {
       console.error('Erro ao buscar pagamento:', error);
       throw new Error('Pagamento não encontrado');
