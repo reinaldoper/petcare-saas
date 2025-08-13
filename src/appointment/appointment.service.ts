@@ -7,12 +7,6 @@ const prisma = new PrismaClient();
 @Injectable()
 export class AppointmentService {
   async create(data: CreateAppointmentDto) {
-    const [datePart, timePart] = data.date.split('T');
-    const [year, month, day] = datePart.split('-').map(Number);
-    const [hour, minute] = timePart.split(':').map(Number);
-    const localDateTime = new Date(year, month - 1, day, hour, minute);
-
-    data.date = localDateTime as any;
     return await prisma.appointment.create({
       data,
     });
