@@ -7,6 +7,8 @@ const prisma = new PrismaClient();
 @Injectable()
 export class AppointmentService {
   async create(data: CreateAppointmentDto) {
+    const date = new Date(data.date).toISOString();
+    data.date = date;
     return await prisma.appointment.create({
       data,
     });

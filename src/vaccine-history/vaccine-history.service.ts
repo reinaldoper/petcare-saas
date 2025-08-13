@@ -10,6 +10,8 @@ const prisma = new PrismaClient();
 @Injectable()
 export class VaccineHistoryService {
   async create(data: CreateVaccineHistoryDto) {
+    const date = new Date(data.appliedAt).toISOString();
+    data.appliedAt = date;
     return await prisma.vaccineHistory.create({ data });
   }
 
