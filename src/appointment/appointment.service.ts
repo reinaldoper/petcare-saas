@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 @Injectable()
 export class AppointmentService {
   async create(data: CreateAppointmentDto) {
+    data.date = new Date(data.date).toLocaleDateString('pt-BR');
     return await prisma.appointment.create({
       data,
     });

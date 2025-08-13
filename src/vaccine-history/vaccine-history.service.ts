@@ -10,6 +10,7 @@ const prisma = new PrismaClient();
 @Injectable()
 export class VaccineHistoryService {
   async create(data: CreateVaccineHistoryDto) {
+    data.appliedAt = new Date(data.appliedAt).toLocaleDateString('pt-BR');
     return await prisma.vaccineHistory.create({ data });
   }
 
