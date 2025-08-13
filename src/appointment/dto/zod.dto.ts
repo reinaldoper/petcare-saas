@@ -8,7 +8,7 @@ export const createAppointmentDtoSchema = z.object({
     .string()
     .min(10, MSG)
     .refine((val) => {
-      const date = new Date(val).toLocaleDateString('pt-BR');
+      const date = new Date(val).toISOString();
       return date;
     }, MSG),
   reason: z.string().min(5, REASON_MSG),
