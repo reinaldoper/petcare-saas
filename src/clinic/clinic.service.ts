@@ -46,6 +46,7 @@ export class ClinicService {
   async search(name: string): Promise<CreateClinicDto> {
     const clinics = await prisma.clinic.findUnique({
       where: { name },
+      include: { users: true, pets: true, stock: true, plan: true },
     });
     return clinics as unknown as CreateClinicDto;
   }
