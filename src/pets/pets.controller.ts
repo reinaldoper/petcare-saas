@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PetsService } from './pets.service';
-import { CreatePetDto } from './dto/create-pet';
+import { CreatePetDto, DeletePetDto } from './dto/create-pet';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -76,7 +76,7 @@ export class PetsController {
   @Delete(':id')
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
-  async remove(@Param('id') id: string) {
-    return await this.petsService.remove(+id);
+  async remove(@Param('id') id: string, @Body() data: DeletePetDto) {
+    return await this.petsService.remove(+id, +data.clinicId);
   }
 }

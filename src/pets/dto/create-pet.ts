@@ -19,3 +19,8 @@ export class CreatePetDto {
   @ApiProperty()
   clinicId: number;
 }
+
+export class DeletePetDto {
+  @ApiProperty()
+  clinicId: number;
+}

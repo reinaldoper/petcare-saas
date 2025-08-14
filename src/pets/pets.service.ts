@@ -60,8 +60,8 @@ export class PetsService {
     });
   }
 
-  async remove(id: number) {
-    return await prisma.pet.delete({ where: { id } });
+  async remove(id: number, clinicId: number) {
+    return await prisma.pet.delete({ where: { id, clinicId } });
   }
 
   async update(id: number, data: CreatePetDto) {
