@@ -11,10 +11,10 @@ import {
   Put,
 } from '@nestjs/common';
 import { StockService } from './stock.service';
-import { CreateStockDto } from './dto/create-stock.dto';
+import { CreateStockDto, DeleteStockDto } from './dto/create-stock.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { createStockSchema } from './dto/zod.dto';
+import { createStockSchema, deleteStockSchema } from './dto/zod.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
@@ -58,11 +58,15 @@ export class StockController {
   @Delete(':id')
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string, @Body() data: DeleteStockDto) {
     if (!id || isNaN(+id)) {
       throw new Error('id inválido!');
     }
-    return await this.service.remove(+id);
+    const result = deleteStockSchema.safeParse(data);
+    if (!result.success) {
+      throw new Error(result.error.message);
+    }
+    return await this.service.remove(+id, +data.clinicId);
   }
 
   @Put(':id')

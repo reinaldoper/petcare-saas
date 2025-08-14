@@ -16,7 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { petIdSchema } from './dto/zod.dto';
+import { petIdSchema, deletePetIdSchema } from './dto/zod.dto';
 
 @ApiTags('pets')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -77,6 +77,13 @@ export class PetsController {
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
   async remove(@Param('id') id: string, @Body() data: DeletePetDto) {
+    if (!id || isNaN(+id)) {
+      throw new Error('id inválido!');
+    }
+    const petId = deletePetIdSchema.safeParse(data);
+    if (!petId.success) {
+      throw new Error(petId.error.message);
+    }
     return await this.petsService.remove(+id, +data.clinicId);
   }
 }

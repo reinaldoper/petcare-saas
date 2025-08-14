@@ -15,3 +15,7 @@ export const createAppointmentDtoSchema = z.object({
   petId: z.number().int().positive(PET_ID_MSG),
   clinicId: z.number().int().positive(PET_ID_MSG),
 });
+
+export const deleteAppointmentDtoSchema = z.object({
+  clinicId: z.number().int().positive(PET_ID_MSG),
+});

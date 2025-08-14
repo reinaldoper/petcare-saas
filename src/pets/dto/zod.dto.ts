@@ -20,3 +20,7 @@ export const petIdSchema = z.object({
   userId: z.number().int().positive(MSG),
   clinicId: z.number().int().positive(MSG),
 });
+
+export const deletePetIdSchema = z.object({
+  clinicId: z.number().int().positive(MSG),
+});

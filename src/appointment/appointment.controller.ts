@@ -12,10 +12,16 @@ import {
   Delete,
 } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
-import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import {
+  CreateAppointmentDto,
+  DeleteAppointmentDto,
+} from './dto/create-appointment.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { createAppointmentDtoSchema } from './dto/zod.dto';
+import {
+  createAppointmentDtoSchema,
+  deleteAppointmentDtoSchema,
+} from './dto/zod.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
@@ -69,10 +75,14 @@ export class AppointmentController {
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string, @Body() data: DeleteAppointmentDto) {
     if (isNaN(+id)) {
       throw new Error('Id inválido!');
     }
-    return await this.appointmentService.remove(+id);
+    const result = deleteAppointmentDtoSchema.safeParse(data);
+    if (!result.success) {
+      throw new Error(result.error.message);
+    }
+    return await this.appointmentService.remove(+id, +data.clinicId);
   }
 }

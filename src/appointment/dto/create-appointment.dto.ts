@@ -13,3 +13,8 @@ export class CreateAppointmentDto {
   @ApiProperty()
   clinicId: number;
 }
+
+export class DeleteAppointmentDto {
+  @ApiProperty()
+  clinicId: number;
+}

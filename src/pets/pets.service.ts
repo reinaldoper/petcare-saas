@@ -61,10 +61,32 @@ export class PetsService {
   }
 
   async remove(id: number, clinicId: number) {
+    const plan = await prisma.clinic.findUnique({
+      where: { id: clinicId },
+      select: { plan: true },
+    });
+
+    if (!plan) {
+      throw new Error('Clínica não encontrada.');
+    }
+    if (plan.plan?.type === 'FREE') {
+      throw new Error('Clinica não autorizada.');
+    }
     return await prisma.pet.delete({ where: { id, clinicId } });
   }
 
   async update(id: number, data: CreatePetDto) {
+    const plan = await prisma.clinic.findUnique({
+      where: { id: data.clinicId },
+      select: { plan: true },
+    });
+
+    if (!plan) {
+      throw new Error('Clínica não encontrada.');
+    }
+    if (plan.plan?.type === 'FREE') {
+      throw new Error('Clinica não autorizada.');
+    }
     return await prisma.pet.update({ where: { id }, data });
   }
 }

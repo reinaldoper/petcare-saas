@@ -52,8 +52,19 @@ export class StockService {
     return await prisma.stock.findUnique({ where: { id } });
   }
 
-  async remove(id: number) {
-    return await prisma.stock.delete({ where: { id } });
+  async remove(id: number, clinicId: number) {
+    const plan = await prisma.clinic.findUnique({
+      where: { id: clinicId },
+      select: { plan: true },
+    });
+
+    if (!plan) {
+      throw new Error('Clínica não encontrada.');
+    }
+    if (plan.plan?.type === 'FREE') {
+      throw new Error('Clinica não autorizada.');
+    }
+    return await prisma.stock.delete({ where: { id, clinicId } });
   }
 
   async updateStock(id: number, data: CreateStockDto) {

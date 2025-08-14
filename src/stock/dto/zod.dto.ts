@@ -24,3 +24,7 @@ export const createStockSchema = z.object({
     }, DATE_MSG),
   clinicId: z.number().int().positive(CLINIC_ID_MSG),
 });
+
+export const deleteStockSchema = z.object({
+  clinicId: z.number().int().positive(CLINIC_ID_MSG),
+});
