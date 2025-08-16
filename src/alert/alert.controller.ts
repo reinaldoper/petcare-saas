@@ -16,4 +16,9 @@ export class AlertController {
   async findUpcoming() {
     return await this.service.findUpcoming();
   }
+
+  @Get('ping')
+  ping() {
+    return { status: 'awake', timestamp: new Date() };
+  }
 }
