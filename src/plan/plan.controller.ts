@@ -33,11 +33,11 @@ export class PlanController {
   }
 
   @Get(':clinicId')
-  async findAll(@Param('clinicId') clinicId: number) {
-    if (isNaN(clinicId)) {
+  async findAll(@Param('clinicId') clinicId: string) {
+    if (isNaN(+clinicId)) {
       throw new Error('ClinicId inválido');
     }
-    return this.planService.findAll(clinicId);
+    return this.planService.findAll(Number(clinicId));
   }
 
   @Put(':id')

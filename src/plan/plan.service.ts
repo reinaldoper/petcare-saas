@@ -8,7 +8,7 @@ export class PlanService {
   constructor() {}
 
   async findAll(clinicId: number) {
-    return prisma.plan.findMany({
+    return prisma.plan.findFirst({
       where: { clinicId },
       orderBy: { type: 'asc' },
     });
