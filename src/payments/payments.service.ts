@@ -80,35 +80,37 @@ export class PaymentsService {
   async getPaymentDetails(paymentId: string) {
     try {
       const response = await this.mercadopix.get({ id: paymentId });
-      this.paymentGateway.notifyPaymentUpdate({
+      const clinic = await prisma.clinic.findFirst({
+        where: {
+          users: {
+            some: {
+              email: response.payer?.email,
+            },
+          },
+        },
+      });
+
+      if (!clinic) {
+        return { received: false };
+      }
+
+      this.paymentGateway.notifyClinicPaymentUpdate(clinic.id, {
         paymentId: response.id,
         status: response.status,
         amount: response.transaction_amount,
       });
 
-      if (response.status === 'approved') {
-        await prisma.payment.create({
-          data: {
-            paymentId: response.id || 1,
-            status: response.status,
-            method: response.payment_method?.type || '',
-            amount: response.transaction_amount || 0,
-            payerEmail: response.payer?.email || '',
-          },
-        });
-      } else {
-        await prisma.payment.create({
-          data: {
-            paymentId: response.id || 1,
-            status: response.status || 'pending',
-            method: response.payment_method?.type || '',
-            amount: response.transaction_amount || 0,
-            payerEmail: response.payer?.email || '',
-          },
-        });
-      }
+      await prisma.payment.create({
+        data: {
+          paymentId: response.id || 1,
+          status: response.status || 'pending',
+          method: response.payment_method?.type || '',
+          amount: response.transaction_amount || 0,
+          payerEmail: response.payer?.email || '',
+        },
+      });
 
-      return { received: response.status === 'approved' ? true : false };
+      return { received: response.status === 'approved' };
     } catch (error) {
       console.error('Erro ao buscar pagamento:', error);
       throw new Error('Pagamento não encontrado');
