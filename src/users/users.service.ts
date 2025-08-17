@@ -14,7 +14,7 @@ const prisma = new PrismaClient();
 export class UsersService {
   async create(userCreate: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(userCreate.password, 10);
-    const { email, name, clinicId } = userCreate;
+    const { email, name, clinicId, phone } = userCreate;
 
     const existAdmin = await prisma.user.findFirst({
       where: { role: Role.ADMIN, clinicId },
@@ -53,7 +53,7 @@ export class UsersService {
       }
 
       return await tx.user.create({
-        data: { email, password: hashedPassword, name, role, clinicId },
+        data: { email, password: hashedPassword, name, role, clinicId, phone },
       });
     });
   }

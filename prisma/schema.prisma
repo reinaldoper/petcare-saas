@@ -81,7 +81,7 @@ model User {
   name      String   @unique
   role      Role     @default(CLIENT)
   clinicId  Int
-  phone     String?
+  phone     Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   pets      Pet[]

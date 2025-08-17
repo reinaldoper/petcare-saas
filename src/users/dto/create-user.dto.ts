@@ -17,5 +17,8 @@ export class CreateUserDto {
   role?: string;
 
   @ApiProperty()
+  phone?: number;
+
+  @ApiProperty()
   clinicId: number;
 }
