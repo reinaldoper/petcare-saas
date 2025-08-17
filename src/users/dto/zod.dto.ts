@@ -6,7 +6,7 @@ const CLIENT = 'CLIENT';
 
 export const createUserSchema = z.object({
   email: z.email(MSG),
-  password: z.string().min(6),
+  password: z.string().min(6).optional(),
   name: z.string().min(4, NAME),
   phone: z.number().optional(),
   role: z

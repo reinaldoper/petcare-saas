@@ -13,7 +13,8 @@ const prisma = new PrismaClient();
 @Injectable()
 export class UsersService {
   async create(userCreate: CreateUserDto) {
-    const hashedPassword = await bcrypt.hash(userCreate.password, 10);
+    const passWord = userCreate.password ?? '123456';
+    const hashedPassword = await bcrypt.hash(passWord, 10);
     const { email, name, clinicId, phone } = userCreate;
 
     const existAdmin = await prisma.user.findFirst({
