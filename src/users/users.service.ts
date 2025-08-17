@@ -54,7 +54,14 @@ export class UsersService {
       }
 
       return await tx.user.create({
-        data: { email, password: hashedPassword, name, role, clinicId, phone },
+        data: {
+          email,
+          password: hashedPassword,
+          name,
+          role,
+          clinicId,
+          phone: typeof phone === 'number' ? phone : null,
+        },
       });
     });
   }
