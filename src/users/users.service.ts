@@ -60,7 +60,7 @@ export class UsersService {
           name,
           role,
           clinicId,
-          phone: typeof phone === 'number' ? phone : null,
+          phone: typeof phone === 'string' ? phone : null,
         },
       });
     });

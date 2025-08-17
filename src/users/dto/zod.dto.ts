@@ -8,7 +8,7 @@ export const createUserSchema = z.object({
   email: z.email(MSG),
   password: z.string().min(6).optional(),
   name: z.string().min(4, NAME),
-  phone: z.number().optional(),
+  phone: z.string().optional(),
   role: z
     .string()
     .min(1)
