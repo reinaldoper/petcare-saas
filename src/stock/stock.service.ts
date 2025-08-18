@@ -61,10 +61,22 @@ export class StockService {
     if (!plan) {
       throw new Error('Clínica não encontrada.');
     }
+
     if (plan.plan?.type === 'FREE') {
-      throw new Error('Clinica não autorizada.');
+      throw new Error('Clínica não autorizada.');
     }
-    return await prisma.stock.delete({ where: { id, clinicId } });
+
+    const stock = await prisma.stock.findFirst({
+      where: { id, clinicId },
+    });
+
+    if (!stock) {
+      throw new Error('Estoque não encontrado ou não pertence à clínica.');
+    }
+
+    return await prisma.stock.delete({
+      where: { id },
+    });
   }
 
   async updateStock(id: number, data: CreateStockDto) {

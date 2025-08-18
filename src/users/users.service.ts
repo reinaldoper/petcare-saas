@@ -106,7 +106,17 @@ export class UsersService {
   }
 
   async deleteUser(userId: number, clinicId: number) {
-    return await prisma.user.delete({ where: { id: userId, clinicId } });
+    const user = await prisma.user.findFirst({
+      where: { id: userId, clinicId },
+    });
+
+    if (!user) {
+      throw new Error('Usuário não pertence à clínica ou não existe.');
+    }
+
+    return await prisma.user.delete({
+      where: { id: userId },
+    });
   }
 
   async getUserByClinicId(clinicId: number) {

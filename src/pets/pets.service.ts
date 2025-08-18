@@ -69,10 +69,22 @@ export class PetsService {
     if (!plan) {
       throw new Error('Clínica não encontrada.');
     }
+
     if (plan.plan?.type === 'FREE') {
-      throw new Error('Clinica não autorizada.');
+      throw new Error('Clínica não autorizada.');
     }
-    return await prisma.pet.delete({ where: { id, clinicId } });
+
+    const pet = await prisma.pet.findFirst({
+      where: { id, clinicId },
+    });
+
+    if (!pet) {
+      throw new Error('Pet não encontrado ou não pertence à clínica.');
+    }
+
+    return await prisma.pet.delete({
+      where: { id },
+    });
   }
 
   async update(id: number, data: CreatePetDto) {

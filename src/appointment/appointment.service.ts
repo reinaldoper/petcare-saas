@@ -44,9 +44,21 @@ export class AppointmentService {
     if (!plan) {
       throw new Error('Clínica não encontrada.');
     }
+
     if (plan.plan?.type === 'FREE') {
-      throw new Error('Clinica não autorizada.');
+      throw new Error('Clínica não autorizada.');
     }
-    return await prisma.appointment.delete({ where: { id, clinicId } });
+
+    const appointment = await prisma.appointment.findFirst({
+      where: { id, clinicId },
+    });
+
+    if (!appointment) {
+      throw new Error('Agendamento não encontrado ou não pertence à clínica.');
+    }
+
+    return await prisma.appointment.delete({
+      where: { id },
+    });
   }
 }
