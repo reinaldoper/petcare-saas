@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { MercadoPagoConfig, PreApproval, Payment } from 'mercadopago';
 import { PrismaClient } from '@prisma/client';
 import { PaymentGateway } from './payment.gateway';
@@ -34,6 +38,7 @@ export class PaymentsService {
         transaction_amount: 49.9,
         currency_id: 'BRL',
       },
+      notification_url: 'https://saas-6ufb.onrender.com/payments/webhook',
     };
 
     try {
@@ -78,8 +83,17 @@ export class PaymentsService {
   }
 
   async getPaymentDetails(paymentId: string) {
+    if (!paymentId) {
+      throw new BadRequestException('Payment ID inválido');
+    }
+
     try {
       const response = await this.mercadopix.get({ id: paymentId });
+
+      if (!response || !response.id) {
+        throw new NotFoundException('Pagamento não encontrado no Mercado Pago');
+      }
+
       const clinic = await prisma.clinic.findFirst({
         where: {
           users: {
@@ -91,29 +105,33 @@ export class PaymentsService {
       });
 
       if (!clinic) {
-        return { received: false };
+        return { received: false, reason: 'Clínica não encontrada' };
       }
+      const existingPayment = await prisma.payment.findUnique({
+        where: { paymentId: response.id },
+      });
 
+      if (!existingPayment) {
+        await prisma.payment.create({
+          data: {
+            paymentId: response.id,
+            status: response.status || 'pending',
+            method: response.payment_method?.type || '',
+            amount: response.transaction_amount || 0,
+            payerEmail: response.payer?.email || '',
+          },
+        });
+      }
       this.paymentGateway.notifyClinicPaymentUpdate(clinic.id, {
         paymentId: response.id,
         status: response.status,
         amount: response.transaction_amount,
       });
 
-      await prisma.payment.create({
-        data: {
-          paymentId: response.id || 1,
-          status: response.status || 'pending',
-          method: response.payment_method?.type || '',
-          amount: response.transaction_amount || 0,
-          payerEmail: response.payer?.email || '',
-        },
-      });
-
       return { received: response.status === 'approved' };
     } catch (error) {
       console.error('Erro ao buscar pagamento:', error);
-      throw new Error('Pagamento não encontrado');
+      throw new BadRequestException('Erro ao processar pagamento');
     }
   }
 }
