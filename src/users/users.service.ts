@@ -105,8 +105,8 @@ export class UsersService {
     } as unknown as CreateUserDto;
   }
 
-  async deleteUser(userId: number) {
-    return await prisma.user.delete({ where: { id: userId } });
+  async deleteUser(userId: number, clinicId: number) {
+    return await prisma.user.delete({ where: { id: userId, clinicId } });
   }
 
   async getUserByClinicId(clinicId: number) {
