@@ -111,6 +111,18 @@ export class UsersService {
         id: userId,
       },
     });
+    const plan = await prisma.clinic.findUnique({
+      where: { id: clinicId },
+      select: { plan: true },
+    });
+
+    if (!plan) {
+      throw new Error('Clínica não encontrada.');
+    }
+
+    if (plan.plan?.type === 'FREE') {
+      throw new Error('Clínica não autorizada.');
+    }
 
     if (!user || user.clinicId !== clinicId) {
       throw new Error('Usuário não pertence à clínica ou não existe.');
