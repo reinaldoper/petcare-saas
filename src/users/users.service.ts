@@ -1,28 +1,28 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
-import { PrismaClient, $Enums } from '@prisma/client';
+import { $Enums } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { UpdateUserRoleDto } from './dto/role.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 const Role = $Enums.Role;
 const Type = $Enums.PlanType;
 
-const prisma = new PrismaClient();
-
 @Injectable()
 export class UsersService {
+  constructor(private readonly prisma: PrismaService) {}
   async create(userCreate: CreateUserDto) {
     const passWord = userCreate.password ?? '123456';
     const hashedPassword = await bcrypt.hash(passWord, 10);
     const { email, name, clinicId, phone } = userCreate;
 
-    const existAdmin = await prisma.user.findFirst({
+    const existAdmin = await this.prisma.user.findFirst({
       where: { role: Role.ADMIN, clinicId },
     });
 
     const role = existAdmin ? Role.CLIENT : Role.ADMIN;
-    return await prisma.$transaction(async (tx) => {
+    return await this.prisma.$transaction(async (tx) => {
       if (role === Role.ADMIN) {
         await tx.plan.create({
           data: {
@@ -67,7 +67,7 @@ export class UsersService {
   }
 
   async findByEmail(email: string) {
-    return await prisma.user.findUnique({ where: { email } });
+    return await this.prisma.user.findUnique({ where: { email } });
   }
 
   async validateUser(login: LoginDto): Promise<CreateUserDto | null> {
@@ -89,11 +89,11 @@ export class UsersService {
     userId: number,
     newRole: UpdateUserRoleDto,
   ): Promise<CreateUserDto | null> {
-    const user = await prisma.user.findFirst({ where: { id: userId } });
+    const user = await this.prisma.user.findFirst({ where: { id: userId } });
     if (!user) {
       return null;
     }
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: { role: newRole.role },
     });
@@ -106,12 +106,12 @@ export class UsersService {
   }
 
   async deleteUser(userId: number, clinicId: number) {
-    const user = await prisma.user.findFirst({
+    const user = await this.prisma.user.findFirst({
       where: {
         id: userId,
       },
     });
-    const plan = await prisma.clinic.findUnique({
+    const plan = await this.prisma.clinic.findUnique({
       where: { id: clinicId },
       select: { plan: true },
     });
@@ -128,13 +128,13 @@ export class UsersService {
       throw new Error('Usuário não pertence à clínica ou não existe.');
     }
 
-    return await prisma.user.delete({
+    return await this.prisma.user.delete({
       where: { id: userId },
     });
   }
 
   async getUserByClinicId(clinicId: number) {
-    const users = await prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       where: { clinicId },
       orderBy: { createdAt: 'asc' },
       include: { clinic: true, pets: true },

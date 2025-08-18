@@ -4,20 +4,21 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { MercadoPagoConfig, PreApproval, Payment } from 'mercadopago';
-import { PrismaClient } from '@prisma/client';
 import { PaymentGateway } from './payment.gateway';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 const planId =
   process.env.MERCADO_PAGO_PLAN_ID || '1a8c6e8d-7b8c-4b8c-8b8c-8b8c8b8c8b8c';
-
-const prisma = new PrismaClient();
 
 @Injectable()
 export class PaymentsService {
   private mercadopago: PreApproval;
   private mercadopix: Payment;
 
-  constructor(private paymentGateway: PaymentGateway) {
+  constructor(
+    private paymentGateway: PaymentGateway,
+    private readonly prisma: PrismaService,
+  ) {
     const client = new MercadoPagoConfig({
       accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN || '',
     });
@@ -94,7 +95,7 @@ export class PaymentsService {
         throw new NotFoundException('Pagamento não encontrado no Mercado Pago');
       }
 
-      const clinic = await prisma.clinic.findFirst({
+      const clinic = await this.prisma.clinic.findFirst({
         where: {
           users: {
             some: {
@@ -107,12 +108,12 @@ export class PaymentsService {
       if (!clinic) {
         return { received: false, reason: 'Clínica não encontrada' };
       }
-      const existingPayment = await prisma.payment.findUnique({
+      const existingPayment = await this.prisma.payment.findUnique({
         where: { paymentId: response.id },
       });
 
       if (!existingPayment) {
-        await prisma.payment.create({
+        await this.prisma.payment.create({
           data: {
             paymentId: response.id,
             status: response.status || 'pending',

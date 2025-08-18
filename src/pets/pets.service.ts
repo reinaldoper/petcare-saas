@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
 import { CreatePetDto } from './dto/create-pet';
+import { PrismaService } from 'src/prisma/prisma.service';
 
-const prisma = new PrismaClient();
 @Injectable()
 export class PetsService {
+  constructor(private readonly prisma: PrismaService) {}
   async create(createPetDto: CreatePetDto) {
     const clinicId = createPetDto.clinicId;
-    const clinic = await prisma.clinic.findUnique({
+    const clinic = await this.prisma.clinic.findUnique({
       where: { id: clinicId },
       select: { plan: true },
     });
@@ -16,7 +16,7 @@ export class PetsService {
       throw new Error('Clínica não encontrada.');
     }
     if (clinic.plan?.type === 'FREE') {
-      const petCount = await prisma.pet.count({
+      const petCount = await this.prisma.pet.count({
         where: { clinicId },
       });
 
@@ -25,11 +25,11 @@ export class PetsService {
       }
     }
 
-    return await prisma.pet.create({ data: createPetDto });
+    return await this.prisma.pet.create({ data: createPetDto });
   }
 
   async findAll({ clinicId }: { clinicId: number }) {
-    const users = await prisma.pet.findMany({
+    const users = await this.prisma.pet.findMany({
       where: { clinicId },
       include: {
         user: {
@@ -54,14 +54,14 @@ export class PetsService {
   }
 
   async findOne(id: number, userId: number, clinicId: number) {
-    return await prisma.pet.findUnique({
+    return await this.prisma.pet.findUnique({
       where: { id, userId, clinicId },
       include: { user: true, clinic: true },
     });
   }
 
   async remove(id: number, clinicId: number) {
-    const plan = await prisma.clinic.findUnique({
+    const plan = await this.prisma.clinic.findUnique({
       where: { id: clinicId },
       select: { plan: true },
     });
@@ -74,7 +74,7 @@ export class PetsService {
       throw new Error('Clínica não autorizada.');
     }
 
-    const pet = await prisma.pet.findFirst({
+    const pet = await this.prisma.pet.findFirst({
       where: { id, clinicId },
     });
 
@@ -82,13 +82,13 @@ export class PetsService {
       throw new Error('Pet não encontrado ou não pertence à clínica.');
     }
 
-    return await prisma.pet.delete({
+    return await this.prisma.pet.delete({
       where: { id },
     });
   }
 
   async update(id: number, data: CreatePetDto) {
-    const plan = await prisma.clinic.findUnique({
+    const plan = await this.prisma.clinic.findUnique({
       where: { id: data.clinicId },
       select: { plan: true },
     });
@@ -99,6 +99,6 @@ export class PetsService {
     if (plan.plan?.type === 'FREE') {
       throw new Error('Clinica não autorizada.');
     }
-    return await prisma.pet.update({ where: { id }, data });
+    return await this.prisma.pet.update({ where: { id }, data });
   }
 }

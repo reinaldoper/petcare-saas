@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { MercadoPagoConfig, PreApproval } from 'mercadopago';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class SubscriptionService {
   private mercadopago: PreApproval;
-  constructor() {
+  constructor(private readonly prisma: PrismaService) {
     const client = new MercadoPagoConfig({
       accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN || '',
     });
@@ -22,7 +20,7 @@ export class SubscriptionService {
 
     const data = subscriptionDetails;
 
-    await prisma.subscription.create({
+    await this.prisma.subscription.create({
       data: {
         subscriptionId: data.id || '',
         payerId: data.payer_id || 1,
