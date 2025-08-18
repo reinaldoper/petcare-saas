@@ -72,15 +72,16 @@ export class UsersController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  async deleteUser(@Param('id') id: string, @Body() clinicId: number) {
+  async deleteUser(
+    @Param('id') id: string,
+    @Body() body: { clinicId: number },
+  ) {
     const userId = parseInt(id, 10);
     if (isNaN(userId)) {
       throw new UnauthorizedException('ID inválido!');
     }
-    if (!clinicId || isNaN(clinicId)) {
-      throw new Error('clinicId é requerido');
-    }
-    return this.usersService.deleteUser(userId, clinicId);
+
+    return this.usersService.deleteUser(userId, body.clinicId);
   }
 
   @Get(':clinicId/users')
