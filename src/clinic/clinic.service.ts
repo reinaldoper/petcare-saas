@@ -20,7 +20,7 @@ export class ClinicService {
       data,
       include: { users: true, pets: true, stock: true, plan: true },
     });
-    return clinic as CreateClinicDto;
+    return clinic;
   }
   async findAll(): Promise<CreateClinicDto[]> {
     const all = await this.prisma.clinic.findMany({
