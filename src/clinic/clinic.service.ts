@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CreateClinicDto } from './dto/create-clinic.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { $Enums } from '@prisma/client';
+const planType = $Enums.PlanType.FREE;
 
 @Injectable()
 export class ClinicService {
@@ -20,6 +22,14 @@ export class ClinicService {
       data,
       include: { users: true, pets: true, stock: true, plan: true },
     });
+
+    const plan = await this.prisma.plan.create({
+      data: {
+        type: planType,
+        clinicId: clinic.id,
+      },
+    });
+    clinic.plan = plan;
     return clinic;
   }
   async findAll(): Promise<CreateClinicDto[]> {
