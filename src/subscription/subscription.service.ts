@@ -82,6 +82,20 @@ export class SubscriptionService {
         data: { status: 'cancelled' },
       });
 
+      const existUser = await this.prisma.user.findUnique({
+        where: { email: existingSubscription.payerEmail || '' },
+      });
+      if (existUser) {
+        const plan = await this.prisma.plan.findFirst({
+          where: { clinicId: existUser.clinicId },
+        });
+        if (plan) {
+          await this.prisma.plan.update({
+            where: { id: plan.id },
+            data: { type: 'FREE' },
+          });
+        }
+      }
       return {
         cancelled: response.status === 'cancelled',
         message: 'Assinatura cancelada com sucesso',
