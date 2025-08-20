@@ -89,15 +89,18 @@ export class SubscriptionService {
         const plan = await this.prisma.plan.findFirst({
           where: { clinicId: existUser.clinicId },
         });
-        if (plan) {
+        if (plan?.type !== 'FREE') {
           await this.prisma.plan.update({
-            where: { id: plan.id },
+            where: { id: plan?.id },
             data: { type: 'FREE' },
           });
         }
       }
       return {
         cancelled: response.status === 'cancelled',
+        subscriptionId,
+        clinicId: existUser?.clinicId,
+        newPlanType: 'FREE',
         message: 'Assinatura cancelada com sucesso',
       };
     } catch (error) {
