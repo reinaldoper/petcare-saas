@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { MercadoPagoConfig, PreApproval } from 'mercadopago';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -51,5 +51,44 @@ export class SubscriptionService {
       status: data.status || 'pending',
       subscription_id: data.id || '',
     };
+  }
+
+  async cancelSubscription(subscriptionId: string) {
+    if (!subscriptionId) {
+      throw new BadRequestException('Subscription ID inválido');
+    }
+
+    try {
+      const response = await this.mercadopago.update({
+        id: subscriptionId,
+        body: {
+          status: 'cancelled',
+        },
+      });
+
+      if (!response) {
+        throw new BadRequestException('Erro ao cancelar assinatura');
+      }
+
+      const existingSubscription = await this.prisma.subscription.findFirst({
+        where: { subscriptionId },
+      });
+
+      if (!existingSubscription) {
+        throw new BadRequestException('Assinatura não encontrada');
+      }
+      await this.prisma.subscription.update({
+        where: { id: existingSubscription.id },
+        data: { status: 'cancelled' },
+      });
+
+      return {
+        cancelled: response.status === 'cancelled',
+        message: 'Assinatura cancelada com sucesso',
+      };
+    } catch (error) {
+      console.error('Erro ao cancelar assinatura:', error);
+      throw new BadRequestException('Erro ao cancelar assinatura');
+    }
   }
 }
