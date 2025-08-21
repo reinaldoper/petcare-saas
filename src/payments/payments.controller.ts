@@ -32,7 +32,7 @@ export class PaymentsController {
   @Post('pix')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  async createPixPayment(@Body() body: CreatePaymentDto) {
+  async createPixPayment(@Body() body: { email: CreatePaymentDto['email'] }) {
     const validation = createPaymentDtoSchema.safeParse(body);
     if (!validation.success) {
       throw new Error(validation.error.message);
