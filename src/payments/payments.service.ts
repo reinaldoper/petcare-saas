@@ -71,7 +71,6 @@ export class PaymentsService {
         email,
       },
     };
-
     const response = await this.mercadopix.create({ body: paymentData });
 
     return {

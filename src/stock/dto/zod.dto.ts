@@ -23,6 +23,12 @@ export const createStockSchema = z.object({
       return date;
     }, DATE_MSG),
   clinicId: z.number().int().positive(CLINIC_ID_MSG),
+  price: z
+    .number()
+    .optional()
+    .refine((val) => val === undefined || val >= 0, {
+      message: 'Preço deve ser um número positivo ou zero',
+    }),
 });
 
 export const deleteStockSchema = z.object({

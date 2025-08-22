@@ -12,6 +12,12 @@ export class CreateAppointmentDto {
 
   @ApiProperty()
   clinicId: number;
+
+  @ApiProperty({ required: false })
+  priority?: boolean;
+
+  @ApiProperty({ required: false })
+  price?: number;
 }
 
 export class DeleteAppointmentDto {

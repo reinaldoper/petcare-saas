@@ -14,6 +14,13 @@ export const createAppointmentDtoSchema = z.object({
   reason: z.string().min(5, REASON_MSG),
   petId: z.number().int().positive(PET_ID_MSG),
   clinicId: z.number().int().positive(PET_ID_MSG),
+  priority: z.boolean().optional(),
+  price: z
+    .number()
+    .optional()
+    .refine((val) => val === undefined || val >= 0, {
+      message: 'Preço deve ser um número positivo ou zero',
+    }),
 });
 
 export const deleteAppointmentDtoSchema = z.object({

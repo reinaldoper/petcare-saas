@@ -50,6 +50,8 @@ model Appointment {
   reason   String
   petId    Int
   clinicId Int
+  priority  Boolean  @default(false)
+  price   Float?
   clinic   Clinic   @relation(fields: [clinicId], references: [id], onDelete: Cascade)
   pet      Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
 }
@@ -70,6 +72,8 @@ model Stock {
   quantity   Int
   type       StockType
   validUntil DateTime
+  price     Float?
+  totalPrice Float? @default(0)
   clinicId   Int
   clinic     Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 }

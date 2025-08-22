@@ -28,6 +28,7 @@ export class StockService {
         );
       }
     }
+    const totalPrice = data.price ? data.price * data.quantity : undefined;
     return await this.prisma.stock.create({
       data: {
         name: data.name,
@@ -35,6 +36,8 @@ export class StockService {
         type: data.type,
         validUntil: new Date(data.validUntil),
         clinicId: data.clinicId,
+        price: data.price,
+        totalPrice,
       },
     });
   }

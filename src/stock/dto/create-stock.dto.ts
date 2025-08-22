@@ -15,6 +15,9 @@ export class CreateStockDto {
 
   @ApiProperty()
   clinicId: number;
+
+  @ApiProperty({ required: false })
+  price?: number;
 }
 
 export class DeleteStockDto {
