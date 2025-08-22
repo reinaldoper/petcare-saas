@@ -82,6 +82,18 @@ export class StockService {
   }
 
   async updateStock(id: number, data: CreateStockDto) {
-    return await this.prisma.stock.update({ where: { id }, data });
+    const totalPrice = data.price ? data.price * data.quantity : undefined;
+    return await this.prisma.stock.update({
+      where: { id },
+      data: {
+        name: data.name,
+        quantity: data.quantity,
+        type: data.type,
+        validUntil: new Date(data.validUntil),
+        clinicId: data.clinicId,
+        price: data.price,
+        totalPrice: totalPrice,
+      },
+    });
   }
 }
