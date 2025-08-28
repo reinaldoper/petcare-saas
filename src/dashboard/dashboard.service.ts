@@ -29,7 +29,7 @@ export class DashboardService {
     stock.forEach((item) => {
       if (item.totalPrice !== null && item.totalPrice !== undefined) {
         estoquePorTipo[item.type] =
-          (estoquePorTipo[item.type] || 0) + item.totalPrice;
+          (estoquePorTipo[item.type] || 0) + Number(item.totalPrice.toFixed(2));
       }
     });
 
