@@ -14,12 +14,12 @@ import { Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('dashboard')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
 @Controller('dashboard')
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
   @Get('/:clinicId')
+  @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
   getDashboard(@Param('clinicId') clinicId: number) {
     return this.dashboardService.getMetrics(clinicId);
