@@ -13,6 +13,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { PlanModule } from './plan/plan.module';
 import { ConfigModule } from '@nestjs/config';
 import { SubscriptionModule } from './subscription/subscription.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
     PaymentsModule,
     PlanModule,
     SubscriptionModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
