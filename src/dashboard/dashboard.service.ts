@@ -7,15 +7,15 @@ export class DashboardService {
 
   async getMetrics(clinicId: number) {
     const appointments = await this.prisma.appointment.findMany({
-      where: { clinicId },
+      where: { clinicId: Number(clinicId) },
       select: { date: true },
     });
     const users = await this.prisma.user.findMany({
-      where: { clinicId },
+      where: { clinicId: Number(clinicId) },
       select: { createdAt: true },
     });
     const stock = await this.prisma.stock.findMany({
-      where: { clinicId },
+      where: { clinicId: Number(clinicId) },
       select: { type: true, totalPrice: true },
     });
 
