@@ -6,6 +6,12 @@ export class CreateClinicDto {
 
   @ApiProperty()
   address: string;
+
+  @ApiProperty()
+  cnpj: string;
+
+  @ApiProperty()
+  razaoSocial: string;
 }
 
 export class NameDto {

@@ -11,6 +11,8 @@ model Clinic {
   id          Int              @id @default(autoincrement())
   name        String           @unique
   address     String
+  razaoSocial String           @unique
+  cnpj        String           @unique
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   appointment Appointment[]

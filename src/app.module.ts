@@ -15,6 +15,7 @@ import { ConfigModule } from '@nestjs/config';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { InvoiceModule } from './invoice/invoice.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     PlanModule,
     SubscriptionModule,
     DashboardModule,
+    InvoiceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
