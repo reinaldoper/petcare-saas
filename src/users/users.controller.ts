@@ -18,6 +18,7 @@ import { UpdateUserRoleDto } from './dto/role.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class UsersController {
@@ -26,6 +27,7 @@ export class UsersController {
     private readonly authService: AuthService,
   ) {}
 
+  @Throttle({ default: { limit: 5, ttl: 60 } })
   @Post('register')
   async register(@Body() body: CreateUserDto) {
     const validation = createUserSchema.safeParse(body);
@@ -40,6 +42,7 @@ export class UsersController {
     return user;
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60 } })
   @Post('login')
   async login(@Body() body: LoginDto) {
     const validation = loginSchema.safeParse(body);
@@ -59,6 +62,7 @@ export class UsersController {
     return { access_token: token };
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60 } })
   @Patch(':id/role')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
@@ -69,6 +73,7 @@ export class UsersController {
     return this.usersService.updateRole(+id, role);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60 } })
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
@@ -84,6 +89,7 @@ export class UsersController {
     return this.usersService.deleteUser(userId, body.clinicId);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60 } })
   @Get(':clinicId/users')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')

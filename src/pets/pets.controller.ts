@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { petIdSchema, deletePetIdSchema } from './dto/zod.dto';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('pets')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -24,6 +25,7 @@ import { petIdSchema, deletePetIdSchema } from './dto/zod.dto';
 export class PetsController {
   constructor(private readonly petsService: PetsService) {}
 
+  @Throttle({ default: { limit: 5, ttl: 60 } })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createPetDto: CreatePetDto) {
@@ -44,6 +46,7 @@ export class PetsController {
     return await this.petsService.findAll(body);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60 } })
   @Patch('/clinic')
   @HttpCode(HttpStatus.OK)
   async findOne(
@@ -62,6 +65,7 @@ export class PetsController {
     return await this.petsService.findOne(+id, +userId, +clinicId);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60 } })
   @Put(':id')
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)
@@ -73,6 +77,7 @@ export class PetsController {
     return await this.petsService.update(+id, data);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60 } })
   @Delete(':id')
   @Roles('ADMIN')
   @HttpCode(HttpStatus.OK)

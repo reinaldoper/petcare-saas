@@ -14,12 +14,19 @@ import { PlanModule } from './plan/plan.module';
 import { ConfigModule } from '@nestjs/config';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60,
+        limit: 10,
+      },
+    ]),
     AppointmentModule,
     VaccineHistoryModule,
     StockModule,
