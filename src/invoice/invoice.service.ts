@@ -45,6 +45,8 @@ export class InvoiceService {
       .text('Nota Fiscal de Serviço Veterinário', { align: 'center' });
 
     doc.moveDown(1);
+    const numeroNota = appointment.id.toString().padStart(6, '0');
+    const serieNota = appointment.clinic.id.toString().padStart(6, '0');
 
     doc
       .fillColor('#000')
@@ -70,6 +72,8 @@ export class InvoiceService {
       150,
       boxTop + 60,
     );
+    doc.fontSize(12).text(`Número da Nota: ${numeroNota}`, 60, boxTop + 80);
+    doc.text(`Série: ${serieNota}`, 300, boxTop + 80);
 
     doc.moveDown(6);
 
