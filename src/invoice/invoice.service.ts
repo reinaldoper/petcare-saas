@@ -89,7 +89,10 @@ export class InvoiceService {
     doc
       .fontSize(12)
       .fillColor('#000')
-      .text('Assinatura: ____________________________', { align: 'center' });
+      .text(`Autorizado pela ${appointment.clinic.razaoSocial}`, {
+        align: 'center',
+        underline: true,
+      });
 
     doc.end();
 
