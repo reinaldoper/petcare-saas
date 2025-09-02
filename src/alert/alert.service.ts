@@ -6,21 +6,27 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class AlertService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findUpcoming() {
+  async findUpcoming(clinicId: number) {
     const now = new Date();
     const inSevenDays = addDays(now, 7);
 
-    const results = await this.prisma.vaccineHistory.findMany({
+    return await this.prisma.vaccineHistory.findMany({
       where: {
         appliedAt: {
           lt: inSevenDays,
+        },
+        pet: {
+          clinicId,
         },
       },
       include: {
         pet: true,
       },
     });
+  }
 
-    return results;
+  async getAllClinicIds(): Promise<number[]> {
+    const clinics = await this.prisma.clinic.findMany({ select: { id: true } });
+    return clinics.map((c) => c.id);
   }
 }

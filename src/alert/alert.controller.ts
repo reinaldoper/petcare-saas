@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
 import { AlertService } from './alert.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AlertsGateway } from './alerts.gateway';
@@ -11,10 +11,10 @@ export class AlertController {
     private readonly alertsGateway: AlertsGateway,
   ) {}
 
-  @Get('upcoming')
+  @Get('upcoming/:clinicId')
   @HttpCode(HttpStatus.OK)
-  async findUpcoming() {
-    return await this.service.findUpcoming();
+  async findUpcoming(@Param('clinicId') clinicId: number) {
+    return await this.service.findUpcoming(Number(clinicId));
   }
 
   @Get('ping')

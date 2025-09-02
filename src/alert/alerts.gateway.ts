@@ -2,8 +2,11 @@ import {
   WebSocketGateway,
   WebSocketServer,
   OnGatewayInit,
+  SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { AlertService } from './alert.service';
 
 @WebSocketGateway({
@@ -16,32 +19,44 @@ export class AlertsGateway implements OnGatewayInit {
   @WebSocketServer()
   server: Server;
 
-  private cachedAlerts: any[] | null = null;
+  private cachedAlerts: Record<number, any[]> = {};
 
   constructor(private readonly alertService: AlertService) {}
 
   afterInit() {
     setInterval(() => {
       this.checkUpcomingAlerts();
-    }, 86400000);
+    }, 86400000); // 24h
   }
 
-  //teste
+  @SubscribeMessage('join-clinic')
+  handleJoinClinic(
+    @MessageBody() clinicId: number,
+    @ConnectedSocket() client: Socket,
+  ) {
+    client.join(`clinic-${clinicId}`);
+    console.log(`Cliente conectado à sala clinic-${clinicId}`);
+  }
 
   private async checkUpcomingAlerts() {
-    const upcomingAlerts = await this.alertService.findUpcoming();
+    const clinics = await this.alertService.getAllClinicIds();
 
-    if (!this.areEqual(upcomingAlerts, this.cachedAlerts)) {
-      this.cachedAlerts = upcomingAlerts;
-      this.server.emit('upcoming-alert', upcomingAlerts);
-    } else {
-      console.log('Nenhuma alteração nos alertas, não emitindo.');
+    for (const clinicId of clinics) {
+      const alerts = await this.alertService.findUpcoming(clinicId);
+
+      const cached = this.cachedAlerts[clinicId] ?? [];
+
+      if (!this.areEqual(alerts, cached)) {
+        this.cachedAlerts[clinicId] = alerts;
+        this.server.to(`clinic-${clinicId}`).emit('upcoming-alert', alerts);
+        console.log(`Emitindo alertas para clinic-${clinicId}`);
+      } else {
+        console.log(`Sem mudanças para clinic-${clinicId}`);
+      }
     }
   }
 
-  private areEqual(arr1: any[] | null, arr2: any[] | null): boolean {
-    if (arr1 === arr2) return true;
-    if (arr1 == null || arr2 == null) return false;
+  private areEqual(arr1: any[], arr2: any[]): boolean {
     try {
       return JSON.stringify(arr1) === JSON.stringify(arr2);
     } catch {
