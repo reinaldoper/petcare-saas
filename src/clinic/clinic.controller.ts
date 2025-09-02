@@ -30,7 +30,7 @@ export class ClinicController {
     if (!result.success) {
       throw new Error(result.error.message);
     }
-    return this.clinicService.create(createClinicDto);
+    return this.clinicService.create(result.data);
   }
 
   @Get()

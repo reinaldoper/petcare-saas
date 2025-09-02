@@ -24,12 +24,18 @@ export class UsersService {
     const role = existAdmin ? Role.CLIENT : Role.ADMIN;
     return await this.prisma.$transaction(async (tx) => {
       if (role === Role.ADMIN) {
-        await tx.plan.create({
-          data: {
-            type: Type.FREE,
-            clinicId,
-          },
+        const existingPlan = await tx.plan.findUnique({
+          where: { clinicId },
         });
+
+        if (!existingPlan) {
+          await tx.plan.create({
+            data: {
+              type: Type.FREE,
+              clinicId,
+            },
+          });
+        }
       }
 
       const clinic = await tx.clinic.findUnique({
