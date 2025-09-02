@@ -194,5 +194,21 @@ npx prisma studio         # Interface visual do Prisma
 npx prisma migrate dev    # Criar migração
 ```
 
+---
+
+📤 Envio de PDF de Agendamentos:
+- Ao agendar uma consulta, o sistema gera um PDF com os dados do atendimento.
+- O PDF é enviado automaticamente por e-mail para o tutor do pet.
+- Informações incluídas: nome do pet, data/hora, profissional, observações.
+
+---
+
+📡 Alertas em Tempo Real com Socket.IO
+- Eventos como planUpdated, appointmentCreated, stockLow são emitidos via WebSocket.
+- Ideal para dashboards administrativos e notificações instantâneas.
+- Clientes devem se conectar ao servidor via Socket.IO para receber os eventos.
+
+---
+
 🧑‍💻 Autor
-Feito com 💙 por Reinaldo Pereira dos Santos.
+- Feito com 💙 por Reinaldo Pereira dos Santos.
