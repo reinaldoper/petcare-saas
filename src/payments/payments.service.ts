@@ -116,7 +116,7 @@ export class PaymentsService {
           data: {
             paymentId: response.id,
             status: response.status || 'pending',
-            method: response.payment_method?.type || '',
+            method: response.payment_method_id || '',
             amount: response.transaction_amount || 0,
             payerEmail: response.payer?.email || '',
           },

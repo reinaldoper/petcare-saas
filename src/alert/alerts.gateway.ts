@@ -26,7 +26,7 @@ export class AlertsGateway implements OnGatewayInit {
   afterInit() {
     setInterval(() => {
       this.checkUpcomingAlerts();
-    }, 86400000); // 24h
+    }, 86400000);
   }
 
   @SubscribeMessage('join-clinic')
