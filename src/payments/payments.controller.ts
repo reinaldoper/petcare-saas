@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+  Res,
+} from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -6,7 +14,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { CreatePaymentDto } from './dto/create-payments.dto';
 import { createPaymentDtoSchema } from './dto/zod.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { WebhookDto } from './dto/create-webhook.dto';
+import { Response } from 'express';
 
 @ApiTags('payments')
 @Controller('payments')
@@ -39,15 +47,26 @@ export class PaymentsController {
     }
     return this.paymentsService.createPixPayment(body.email);
   }
-
   @Post('webhook')
   @HttpCode(200)
-  async handleWebhook(@Body() body: WebhookDto) {
-    const paymentId = body.data?.id;
+  async handleWebhook(
+    @Body() body: Record<string, any>,
+    @Res() res: Response,
+  ): Promise<void> {
+    const { type, data } = body;
+    const typeBody = type as 'payment' | 'subscription_authorized_payment';
+    const dataId = (data as { id: string })?.id;
 
-    const paymentDetails =
-      await this.paymentsService.getPaymentDetails(paymentId);
+    if (!typeBody || !dataId) {
+      res.status(HttpStatus.BAD_REQUEST).json({ error: 'Dados inválidos' });
+      return;
+    }
 
-    return paymentDetails;
+    const paymentDetails = await this.paymentsService.getPaymentDetails(
+      dataId,
+      typeBody,
+    );
+
+    res.status(HttpStatus.OK).json(paymentDetails);
   }
 }
