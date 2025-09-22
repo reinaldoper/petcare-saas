@@ -18,6 +18,12 @@ export class SubscriptionController {
   }
 
   @Throttle({ default: { limit: 5, ttl: 60 } })
+  @Post('confirm-payment')
+  async confirmPayment(@Body() body: { payment_id: string }) {
+    return this.subscriptionService.conforimPayment(body.payment_id);
+  }
+
+  @Throttle({ default: { limit: 5, ttl: 60 } })
   @Post('cancel-subscription')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')

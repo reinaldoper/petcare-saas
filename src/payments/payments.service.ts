@@ -50,8 +50,6 @@ export class PaymentsService {
       });
 
       const subscriptionId = response.id;
-
-      const redirectUrl = `https://site-retorno.vercel.app?subscription_id=${subscriptionId}`;
       if (!subscriptionId) {
         throw new BadRequestException('Erro ao criar assinatura');
       }
@@ -67,7 +65,6 @@ export class PaymentsService {
       });
       return {
         init_point: response.init_point,
-        redirectUrl,
         subscriptionId,
       };
     } catch (error) {
@@ -78,6 +75,7 @@ export class PaymentsService {
 
   async createPixPayment(email: string) {
     const paymentData = {
+      back_url: 'https://site-retorno.vercel.app',
       transaction_amount: 109.9,
       description: 'Pagamento via Pix',
       payment_method_id: 'pix',
@@ -168,6 +166,21 @@ export class PaymentsService {
                 ? (response.transaction_amount ?? 0)
                 : 0,
             payerEmail: email ?? '',
+          },
+        });
+      } else {
+        payment = await this.prisma.payment.update({
+          where: { id: payment.id },
+          data: {
+            status: response.status ?? payment.status,
+            amount:
+              'transaction_amount' in response
+                ? response.transaction_amount || payment.amount
+                : payment.amount,
+            method:
+              'payment_method_id' in response
+                ? response.payment_method_id || payment.method
+                : payment.method,
           },
         });
       }

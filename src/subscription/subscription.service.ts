@@ -1,16 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { MercadoPagoConfig, PreApproval } from 'mercadopago';
+import { MercadoPagoConfig, Payment, PreApproval } from 'mercadopago';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class SubscriptionService {
   private mercadopago: PreApproval;
+  private mercadoPix: Payment;
   constructor(private readonly prisma: PrismaService) {
     const client = new MercadoPagoConfig({
       accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN || '',
     });
 
     this.mercadopago = new PreApproval(client);
+    this.mercadoPix = new Payment(client);
   }
 
   async confirmSubscription(subscriptionId: string) {
@@ -42,6 +44,45 @@ export class SubscriptionService {
             frequencyType: data.auto_recurring?.frequency_type || 'months',
             transactionAmount: data.auto_recurring?.transaction_amount || 49.9,
             currencyId: data.auto_recurring?.currency_id || 'BRL',
+          },
+        },
+      },
+    });
+
+    return {
+      status: data.status || 'pending',
+      subscription_id: data.id || '',
+    };
+  }
+
+  async conforimPayment(payment: string) {
+    const subscriptionDetails = await this.mercadoPix.get({
+      id: payment,
+    });
+
+    const data = subscriptionDetails;
+
+    await this.prisma.subscription.create({
+      data: {
+        status: data.status || 'active',
+        lastModified: new Date(data.date_created || new Date()),
+        nextPaymentDate: new Date(data.date_approved || new Date()),
+        initPoint: data.callback_url || '',
+        applicationId: data.id || 1,
+        reason: 'Assinatura Pix',
+        payerEmail: data.payer?.email || '',
+        payerId: Number(data.payer?.id) || 1,
+        subscriptionId: data.id?.toString() || '',
+        dateCreated: new Date(data.date_created || new Date()),
+        collectorId: data.collector_id || 1,
+        backUrl:
+          data.callback_url || 'https://github.com/reinaldoper/site-retorno',
+        autoRecurring: {
+          create: {
+            frequency: 1,
+            frequencyType: 'months',
+            transactionAmount: 109.9,
+            currencyId: 'BRL',
           },
         },
       },
