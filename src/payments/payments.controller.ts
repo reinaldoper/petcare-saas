@@ -26,9 +26,7 @@ export class PaymentsController {
   @Roles('ADMIN')
   async subscribe(
     @Body()
-    body: {
-      email: CreatePaymentDto['email'];
-    },
+    body: CreatePaymentDto,
   ): Promise<Promise<any>> {
     const validation = createPaymentDtoSchema.safeParse(body);
     if (!validation.success) {
@@ -40,7 +38,7 @@ export class PaymentsController {
   @Post('pix')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
-  async createPixPayment(@Body() body: { email: CreatePaymentDto['email'] }) {
+  async createPixPayment(@Body() body: CreatePaymentDto) {
     const validation = createPaymentDtoSchema.safeParse(body);
     if (!validation.success) {
       throw new Error(validation.error.message);
