@@ -110,7 +110,7 @@ export class PaymentsService {
 
   async getPaymentDetails(
     subscriptionId: string,
-    type: 'payment' | 'subscription_authorized_payment',
+    type: 'payment' | 'subscription_preapproval',
   ) {
     if (!subscriptionId?.trim()) {
       throw new BadRequestException('ID de pagamento inválido');
@@ -126,7 +126,7 @@ export class PaymentsService {
           where: { paymentId: Number(subscriptionId) },
         });
         email = payment?.payerEmail || '';
-      } else if (type === 'subscription_authorized_payment') {
+      } else {
         response = await this.mercadopago.get({ id: subscriptionId });
         const subscription = await this.prisma.payment.findFirst({
           where: { paymentId: Number(subscriptionId) },

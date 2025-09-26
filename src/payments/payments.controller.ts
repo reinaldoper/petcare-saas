@@ -52,7 +52,7 @@ export class PaymentsController {
     @Res() res: Response,
   ): Promise<void> {
     const { type, data } = body;
-    const typeBody = type as 'payment' | 'subscription_authorized_payment';
+    const typeBody = type as 'payment' | 'subscription_preapproval';
     const dataId = (data as { id: string })?.id;
 
     if (!typeBody || !dataId) {
