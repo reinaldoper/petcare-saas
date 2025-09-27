@@ -193,10 +193,6 @@ export class PaymentsService {
             : 0,
       });
 
-      if (payment.status !== 'approved') {
-        return { received: false, reason: 'Pagamento não aprovado' };
-      }
-
       if (
         payment.status === 'approved' ||
         payment.status === 'authorized' ||
