@@ -193,6 +193,30 @@ export class PaymentsService {
             : 0,
       });
 
+      if (payment.status !== 'approved') {
+        return { received: false, reason: 'Pagamento não aprovado' };
+      }
+
+      if (
+        payment.status === 'approved' ||
+        payment.status === 'authorized' ||
+        payment.status === 'finished'
+      ) {
+        await this.prisma.plan.update({
+          where: { clinicId: clinic.id },
+          data: {
+            type: 'PAY',
+          },
+        });
+      } else {
+        await this.prisma.plan.update({
+          where: { clinicId: clinic.id },
+          data: {
+            type: 'FREE',
+          },
+        });
+      }
+
       return { received: response.status === 'approved' };
     } catch (error) {
       console.error('Erro ao buscar pagamento:', error?.message || error);
