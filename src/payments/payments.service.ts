@@ -213,8 +213,15 @@ export class PaymentsService {
   }
 
   async getPaymentByEmail(email: string) {
-    return this.prisma.payment.findFirst({
+    return this.prisma.payment.findMany({
       where: { payerEmail: email },
+      select: {
+        paymentId: true,
+        status: true,
+        amount: true,
+        method: true,
+        createdAt: true,
+      },
       orderBy: { createdAt: 'desc' },
     });
   }
