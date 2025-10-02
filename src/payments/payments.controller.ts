@@ -4,8 +4,6 @@ import {
   Body,
   UseGuards,
   HttpCode,
-  HttpStatus,
-  Res,
   BadRequestException,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
@@ -48,24 +46,15 @@ export class PaymentsController {
   }
   @Post('webhook')
   @HttpCode(200)
-  async handleWebhook(
-    @Body() body: Record<string, any>,
-    @Res() res: Response,
-  ): Promise<void> {
+  async handleWebhook(@Body() body: Record<string, any>) {
     const { type, data } = body;
     const typeBody = type as 'payment' | 'subscription_preapproval';
-    const dataId = (data as { id: string })?.id;
+    const dataId = data?.id?.toString?.() ?? String(data?.id);
 
     if (!typeBody || !dataId) {
-      res.status(HttpStatus.BAD_REQUEST).json({ error: 'Dados inválidos' });
-      return;
+      throw new BadRequestException('Dados inválidos');
     }
 
-    const paymentDetails = await this.paymentsService.getPaymentDetails(
-      dataId,
-      typeBody,
-    );
-
-    res.status(HttpStatus.OK).json(paymentDetails);
+    return await this.paymentsService.UpdatePaymentDetails(dataId, typeBody);
   }
 }

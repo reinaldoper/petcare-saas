@@ -107,28 +107,28 @@ export class PaymentsService {
     };
   }
 
-  async getPaymentDetails(
-    subscriptionId: string,
+  async UpdatePaymentDetails(
+    subscriptionId: string | number,
     type: 'payment' | 'subscription_preapproval',
   ) {
-    if (!subscriptionId?.trim()) {
+    const id = String(subscriptionId).trim();
+    if (!id) {
       throw new BadRequestException('ID de pagamento inválido');
     }
 
     try {
       let response: PaymentResponse | PreApprovalResponse | null = null;
-      let email = '';
+
       const payment = await this.prisma.payment.findFirst({
-        where: { paymentId: subscriptionId },
+        where: { paymentId: id },
       });
 
-      if (type === 'payment') {
-        response = await this.mercadopix.get({ id: subscriptionId });
-        email = payment?.payerEmail || '';
-      } else {
-        response = await this.mercadopago.get({ id: subscriptionId });
-        email = payment?.payerEmail || '';
-      }
+      response =
+        type === 'payment'
+          ? await this.mercadopix.get({ id })
+          : await this.mercadopago.get({ id });
+
+      const email = payment?.payerEmail || '';
 
       if (!response?.id) {
         throw new NotFoundException('Pagamento não encontrado no Mercado Pago');
@@ -147,7 +147,7 @@ export class PaymentsService {
       if (!payment) {
         await this.prisma.payment.create({
           data: {
-            paymentId: response.id.toString(),
+            paymentId: id,
             status: response.status ?? 'pending',
             method:
               'payment_method_id' in response
@@ -162,7 +162,7 @@ export class PaymentsService {
         });
       } else {
         await this.prisma.payment.update({
-          where: { id: payment.id },
+          where: { paymentId: id },
           data: {
             status: response.status ?? payment.status,
             amount:
@@ -177,7 +177,7 @@ export class PaymentsService {
         });
       }
       this.paymentGateway.notifyClinicPaymentUpdate(clinic.id, {
-        paymentId: response.id,
+        paymentId: subscriptionId,
         status: response.status ?? 'unknown',
         amount:
           'transaction_amount' in response
