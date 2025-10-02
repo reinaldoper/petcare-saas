@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Res,
+  BadRequestException,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -27,10 +28,10 @@ export class PaymentsController {
   async subscribe(
     @Body()
     body: CreatePaymentDto,
-  ): Promise<Promise<any>> {
+  ) {
     const validation = createPaymentDtoSchema.safeParse(body);
     if (!validation.success) {
-      throw new Error(validation.error.message);
+      throw new BadRequestException(validation.error.message);
     }
     return this.paymentsService.createSubscription(body.email);
   }
@@ -41,7 +42,7 @@ export class PaymentsController {
   async createPixPayment(@Body() body: CreatePaymentDto) {
     const validation = createPaymentDtoSchema.safeParse(body);
     if (!validation.success) {
-      throw new Error(validation.error.message);
+      throw new BadRequestException(validation.error.message);
     }
     return this.paymentsService.createPixPayment(body.email);
   }
