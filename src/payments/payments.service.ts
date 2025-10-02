@@ -56,7 +56,7 @@ export class PaymentsService {
 
       await this.prisma.payment.create({
         data: {
-          paymentId: Number(subscriptionId),
+          paymentId: subscriptionId,
           payerEmail,
           status: response.status || 'pending',
           amount: response.auto_recurring?.transaction_amount || 0,
@@ -91,7 +91,7 @@ export class PaymentsService {
     }
     await this.prisma.payment.create({
       data: {
-        paymentId: response.id,
+        paymentId: response.id.toString(),
         payerEmail: email,
         status: response.status || 'pending',
         amount: response.transaction_amount || 0,
@@ -123,13 +123,13 @@ export class PaymentsService {
       if (type === 'payment') {
         response = await this.mercadopix.get({ id: subscriptionId });
         const payment = await this.prisma.payment.findFirst({
-          where: { paymentId: Number(subscriptionId) },
+          where: { paymentId: subscriptionId },
         });
         email = payment?.payerEmail || '';
       } else {
         response = await this.mercadopago.get({ id: subscriptionId });
         const subscription = await this.prisma.payment.findFirst({
-          where: { paymentId: Number(subscriptionId) },
+          where: { paymentId: subscriptionId },
         });
         email = subscription?.payerEmail || '';
       }
@@ -149,13 +149,13 @@ export class PaymentsService {
         return { received: false, reason: 'Clínica não encontrada' };
       }
       let payment = await this.prisma.payment.findUnique({
-        where: { paymentId: Number(response.id) },
+        where: { paymentId: response.id.toString() },
       });
 
       if (!payment) {
         payment = await this.prisma.payment.create({
           data: {
-            paymentId: Number(response.id),
+            paymentId: response.id.toString(),
             status: response.status ?? 'pending',
             method:
               'payment_method_id' in response
