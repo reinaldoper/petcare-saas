@@ -75,8 +75,7 @@ export class PaymentsService {
 
   async createPixPayment(email: string) {
     const paymentData = {
-      back_url: 'https://site-retorno.vercel.app',
-      transaction_amount: 109.9,
+      transaction_amount: 0.01,
       description: 'Pagamento via Pix',
       payment_method_id: 'pix',
       payer: {
