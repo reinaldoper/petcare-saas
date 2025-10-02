@@ -38,7 +38,7 @@ export class PaymentsService {
       auto_recurring: {
         frequency: 1,
         frequency_type: 'months',
-        transaction_amount: 49.9,
+        transaction_amount: 29.9,
         currency_id: 'BRL',
       },
       notification_url: 'https://saas-6ufb.onrender.com/payments/webhook',
@@ -75,7 +75,7 @@ export class PaymentsService {
 
   async createPixPayment(email: string) {
     const paymentData = {
-      transaction_amount: 0.01,
+      transaction_amount: 99.9,
       description: 'Pagamento via Pix',
       payment_method_id: 'pix',
       payer: {
