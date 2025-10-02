@@ -5,6 +5,7 @@ import {
   UseGuards,
   HttpCode,
   BadRequestException,
+  Patch,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -13,7 +14,6 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { CreatePaymentDto } from './dto/create-payments.dto';
 import { createPaymentDtoSchema } from './dto/zod.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
 
 @ApiTags('payments')
 @Controller('payments')
@@ -44,6 +44,7 @@ export class PaymentsController {
     }
     return this.paymentsService.createPixPayment(body.email);
   }
+
   @Post('webhook')
   @HttpCode(200)
   async handleWebhook(@Body() body: Record<string, any>) {
@@ -56,5 +57,16 @@ export class PaymentsController {
     }
 
     return await this.paymentsService.UpdatePaymentDetails(dataId, typeBody);
+  }
+
+  @Patch('latest')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  async getLatestPayment(@Body() body: CreatePaymentDto) {
+    const validation = createPaymentDtoSchema.safeParse(body);
+    if (!validation.success) {
+      throw new BadRequestException(validation.error.message);
+    }
+    return this.paymentsService.getPaymentByEmail(body.email);
   }
 }

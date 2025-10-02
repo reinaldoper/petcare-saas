@@ -211,4 +211,11 @@ export class PaymentsService {
       throw new BadRequestException('Erro ao processar pagamento');
     }
   }
+
+  async getPaymentByEmail(email: string) {
+    return this.prisma.payment.findFirst({
+      where: { payerEmail: email },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
 }
