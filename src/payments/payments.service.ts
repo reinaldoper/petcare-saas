@@ -118,19 +118,16 @@ export class PaymentsService {
     try {
       let response: PaymentResponse | PreApprovalResponse | null = null;
       let email = '';
+      const payment = await this.prisma.payment.findFirst({
+        where: { paymentId: subscriptionId },
+      });
 
       if (type === 'payment') {
         response = await this.mercadopix.get({ id: subscriptionId });
-        const payment = await this.prisma.payment.findFirst({
-          where: { paymentId: subscriptionId },
-        });
         email = payment?.payerEmail || '';
       } else {
         response = await this.mercadopago.get({ id: subscriptionId });
-        const subscription = await this.prisma.payment.findFirst({
-          where: { paymentId: subscriptionId },
-        });
-        email = subscription?.payerEmail || '';
+        email = payment?.payerEmail || '';
       }
 
       if (!response?.id) {
@@ -147,12 +144,8 @@ export class PaymentsService {
       if (!clinic) {
         return { received: false, reason: 'Clínica não encontrada' };
       }
-      let payment = await this.prisma.payment.findUnique({
-        where: { paymentId: response.id.toString() },
-      });
-
       if (!payment) {
-        payment = await this.prisma.payment.create({
+        await this.prisma.payment.create({
           data: {
             paymentId: response.id.toString(),
             status: response.status ?? 'pending',
@@ -168,7 +161,7 @@ export class PaymentsService {
           },
         });
       } else {
-        payment = await this.prisma.payment.update({
+        await this.prisma.payment.update({
           where: { id: payment.id },
           data: {
             status: response.status ?? payment.status,
@@ -193,9 +186,9 @@ export class PaymentsService {
       });
 
       if (
-        payment.status === 'approved' ||
-        payment.status === 'authorized' ||
-        payment.status === 'finished'
+        response.status === 'approved' ||
+        response.status === 'authorized' ||
+        response.status === 'finished'
       ) {
         await this.prisma.plan.update({
           where: { clinicId: clinic.id },
